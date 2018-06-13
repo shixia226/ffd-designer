@@ -1,0 +1,31 @@
+<!doctype html>
+<html lang="en">
+    <head>
+        <meta charset="utf-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+        <title>Vue Demo</title>
+        <link rel="stylesheet" href="https://cdn.bootcss.com/bootstrap/4.0.0/css/bootstrap.min.css" integrity="sha384-Gn5384xqQ1aoWXA+058RXPxPg6fy4IWvTNh0E263XmFcJlSAwiGgFAW/dAiS6JXm" crossorigin="anonymous">
+    </head>
+    <body>
+        <div class="app" @click="showPpt">
+            <widget-breadcrumb>
+                <a href="#">Home</a>
+                <a href="#">Library</a>
+                <span>Data</span>
+            </widget-breadcrumb>
+            <widget-card>
+                <h1 name="header">Card Header</h1>
+                <h2 name="title">Card Title</h2>
+                <h3 name="subTitle">Card SubTitle</h3>
+                <p name="text">This is a Card Widget of Vue Demo.</p>
+                <h1 name="footer">Card Footer</h1>
+            </widget-card>
+            <widget-badge></widget-badge>
+            <widget-button theme="outline-secondary" size="lg" text="Secondary Button"></widget-button>
+            <widget-button theme="primary" block="true" text="Button"></widget-button>
+        </div>
+        <div class="ppt"></div>
+        <script src="https://cdn.jsdelivr.net/npm/vue@2.5.16/dist/vue.js"></script>
+        <script src="../index.js"></script>
+    </body>
+</html>

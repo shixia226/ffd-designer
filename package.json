@@ -1,0 +1,29 @@
+{
+  "name": "bootstrap-vue-designer",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "dev": "webpack-dev-server --port=9926"
+  },
+  "keywords": [
+    "vue",
+    "bootstrap",
+    "designer"
+  ],
+  "author": "",
+  "license": "MIT",
+  "devDependencies": {
+    "babel-core": "^6.26.3",
+    "babel-loader": "^7.1.4",
+    "babel-plugin-syntax-jsx": "^6.18.0",
+    "babel-plugin-transform-vue-jsx": "^3.7.0",
+    "babel-preset-env": "^1.7.0",
+    "css-loader": "^0.28.11",
+    "node-sass": "^4.9.0",
+    "sass-core": "^1.0.0",
+    "sass-loader": "^7.0.3",
+    "style-loader": "^0.21.0"
+  }
+}
