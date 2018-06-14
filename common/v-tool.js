@@ -12,5 +12,8 @@ export default {
     attr(vnode, name) {
         let data = vnode.data;
         return data ? data.attrs[name] : null;
+    },
+    random() {
+        return ('' + Math.random()).replace('.', '');
     }
 }

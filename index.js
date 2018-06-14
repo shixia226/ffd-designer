@@ -4,6 +4,8 @@ import './widgets/widget-badge.vue';
 import './widgets/widget-button.vue';
 import './widgets/widget-breadcrumb.vue';
 import './widgets/widget-card.vue';
+import './widgets/widget-carousel.vue';
+import './widgets/widget-dropdown.vue';
 
 import './editors/editor-theme.vue';
 import './editors/editor-switch.vue';
@@ -13,11 +15,6 @@ import './editors/editor-button.vue';
 
 window.vm = new Vue({
     el: '.app',
-    data() {
-        return {
-            vcmp: null
-        }
-    },
     methods: {
         showPpt: function(evt) {
             let elem = evt.target;
@@ -61,19 +58,23 @@ window.vm = new Vue({
 function getVueCmpData(vcmp) {
     if (!vcmp) return {};
     let $data = vcmp.$data,
-        names = vcmp.$options._propKeys,
         data = {};
-    if (names) {
-        for (let k = 0, klen = names.length; k < klen; k++) {
-            let name = names[k],
-                vname = 'v' + name;
-            data[name] = $data[vname];
-        }
-    } else if (arguments[1]) {
+    if (arguments[1]) {
         let names = Object.getOwnPropertyNames($data);
         for (let i = 0, len = names.length; i < len; i++) {
             let name = names[i];
-            data[name.substr(1)] = $data[name];
+            if (name.charAt(0) === 'v') {
+                data[name.substr(1)] = $data[name];
+            }
+        }
+    } else {
+        let names = vcmp.$options._propKeys;
+        if (names) {
+            for (let k = 0, klen = names.length; k < klen; k++) {
+                let name = names[k],
+                    vname = 'v' + name;
+                data[name] = $data[vname];
+            }
         }
     }
     return data;
