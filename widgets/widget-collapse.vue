@@ -27,6 +27,15 @@ Vue.component('widget-collapse', {
     add(vm) {
         vm.vitems.push({ id: VTool.random(), header: 'New Item' });
     },
+    save(vm, space, saveVue) {
+        let html = [], children = vm.$children, items = vm.vitems, cspace = space + '    ';
+        for (let i = 0, len = children.length; i < len; i++) {
+            html.push(space, '<div header="', items[i].header, '">');
+            saveVue(children[i], html, cspace);
+            html.push(space, '</div>');
+        }
+        return html.join('');
+    },
     created() {
         let _render = this._render;
         this._render = function() {// 这里复写_render方法，防止update内容后$slots重新生成，无法对应到各个slot

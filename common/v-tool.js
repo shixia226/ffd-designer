@@ -1,6 +1,6 @@
 export default {
     text(vnode) {
-        let children = vnode.children;
+        let children = vnode.children || vnode.default;
         if (children) {
             let text = [];
             for (let i = 0, len = children.length; i < len; i++) {

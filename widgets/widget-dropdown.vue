@@ -12,7 +12,7 @@ Vue.component('widget-dropdown', {
         </div>`,
     props: ['direction', 'theme', 'size'],
     editor: `<editor-size :value="size"></editor-size>
-        <editor-theme :value="theme"></editor-theme>
+        <editor-theme :value="theme" outline="true"></editor-theme>
         <editor-text name="vbutton" :value="button" label="Downdown Text"></editor-text>
         <hr class="my-4">
         <widget-collapse>
@@ -25,13 +25,12 @@ Vue.component('widget-dropdown', {
         <hr class="my-4">
         <editor-button text="Add" handler="this.$options.add(this)"></editor-button>`,
     save(vm, space = '') {
-        let html = [], items = this.vitems;
+        let html = [], items = vm.vitems;
         for (let i = 0, len = items.length; i < len; i++) {
             let item = items[i];
             html.push(`${space}<a href="${item.link||''}">${item.text||'-'}</a>`);
         }
-        return `${space}<button>${vm.vbutton}</button>
-            ${html.join('')}`;
+        return `${space}<button>${vm.vbutton}</button>${html.join('')}`;
     },
     add(vm) {
         vm.vitems.push({text: 'New Item', link: '', id: VTool.random()});

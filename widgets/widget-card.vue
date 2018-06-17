@@ -19,7 +19,7 @@ Vue.component('widget-card', {
         <editor-text name="vfooter" :value="footer" label="Footer"></editor-text>`,
     save(vm, space = '') {
         return `${space}<h1 name="header">${vm.vheader||''}</h1>
-            ${space}<img name="logo" src="${vm.vlogo||''}" />
+            ${vm.vlogo ? space + `<img name="logo" src="${vm.vlogo}" />` : ''}
             ${space}<h2 name="title">${vm.vtitle||''}</h2>
             ${space}<h3 name="subTitle">${vm.vsubTitle||''}</h3>
             ${space}<p name="text">${vm.vtext||''}</p>

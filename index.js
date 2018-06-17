@@ -7,12 +7,18 @@ import './widgets/widget-card.vue';
 import './widgets/widget-carousel.vue';
 import './widgets/widget-dropdown.vue';
 import './widgets/widget-collapse.vue';
+import './widgets/widget-input.vue';
+import './widgets/widget-list.vue';
+import './widgets/widget-container.vue';
+import './widgets/widget-text.vue';
+import './widgets/widget-pagination.vue';
 
 import './editors/editor-theme.vue';
 import './editors/editor-switch.vue';
 import './editors/editor-text.vue';
 import './editors/editor-size.vue';
 import './editors/editor-button.vue';
+import './editors/editor-select.vue';
 
 window.vm = new Vue({
     el: '.app',
@@ -92,28 +98,33 @@ function getVueCmpData(vcmp) {
 
 function saveVue(vm, html, space) {
     html = html || [];
-    space = (space || '\n') + '    ';
+    space = space || '';
+    let tag = vm.$options.name || 'page',
+        $data = getVueCmpData(vm),
+        cspace = (space || '\n') + '    ';
+    html.push(space, '<', tag);
+    for (let name in $data) {
+        if ($data[name]) {
+            html.push(' ', name, '="', $data[name], '"');
+        }
+    }
+    html.push('>');
+    let htmlLen = html.length;
     if (vm.$options.save) {
-        html.push(vm.$options.save(vm, space));
+        html.push(vm.$options.save(vm, cspace, saveVue));
     } else {
         let $children = vm.$children;
         if ($children) {
             for (let i = 0, len = $children.length; i < len; i++) {
-                let vcmp = $children[i],
-                    tag = vcmp.$options.name,
-                    $data = getVueCmpData(vcmp);
-                html.push(space, '<', tag);
-                for (let name in $data) {
-                    if ($data[name]) {
-                        html.push(' ', name, '="', $data[name], '"');
-                    }
-                }
-                html.push('>');
-                saveVue(vcmp, html, space);
-                html.push(space, '</', tag, '>');
+                let vcmp = $children[i];
+                saveVue(vcmp, html, cspace);
             }
         }
     }
+    if (htmlLen < html.length) {
+        html.push(space || '\n');
+    }
+    html.push('</', tag, '>');
     return html;
 }
 
