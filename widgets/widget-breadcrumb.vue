@@ -6,12 +6,14 @@ Vue.component('widget-breadcrumb', {
                 <li v-for="(item, index) in vitems" :key="item.id" :class="['breadcrumb-item', {active: index===vitems.length-1}]"><span v-if="index===vitems.length-1">{{item.text}}</span><a v-else :href="item.link||'#'">{{item.text}}</a></li>
             </ol>
         </nav>`,
-    editor: `<div v-for="(item, index) in items" :key="item.id">
-            <editor-text :name="'vitems.' + index + '.text'" :value="item.text"></editor-text>
-            <editor-text :name="'vitems.' + index + '.link'" :value="item.link"></editor-text>
-            <editor-button text="Remove" :handler="'this.vitems.splice(' + index + ', 1)'"></editor-button>
-            <hr class="my-4">
-        </div>
+    editor: `<widget-collapse>
+            <div v-for="(item, index) in items" :key="item.id">
+                <editor-text :name="'vitems.' + index + '.text'" :value="item.text"></editor-text>
+                <editor-text :name="'vitems.' + index + '.link'" :value="item.link"></editor-text>
+                <editor-button text="Remove" :handler="'this.vitems.splice(' + index + ', 1)'"></editor-button>
+            </div>
+        </widget-collapse>
+        <hr class="my-4">
         <editor-button text="Add" handler="this.$options.add(this)"></editor-button>`,
     save(vm, space = '') {
         let html = [], items = vm.vitems;

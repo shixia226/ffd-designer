@@ -6,6 +6,7 @@ import './widgets/widget-breadcrumb.vue';
 import './widgets/widget-card.vue';
 import './widgets/widget-carousel.vue';
 import './widgets/widget-dropdown.vue';
+import './widgets/widget-collapse.vue';
 
 import './editors/editor-theme.vue';
 import './editors/editor-switch.vue';
@@ -15,6 +16,40 @@ import './editors/editor-button.vue';
 
 window.vm = new Vue({
     el: '.app',
+    data: {
+        pptCmp: undefined
+    },
+    watch: {
+        pptCmp(vcmp) {
+            new Vue({
+                el: '.ppt',
+                template: '<div class="ppt">' + (vcmp ? vcmp.$options.editor || '' : '') + '</div>',
+                data() {
+                    return getVueCmpData(vcmp, true);
+                },
+                created() {
+                    this.$on('changeppt', function(name, value) {
+                        if (vcmp) {
+                            let names = name.split('.'),
+                                data = vcmp,
+                                len = names.length - 1;
+                            for (let i = 0; i < len; i++) {
+                                data = data[names[i]];
+                            }
+                            data[names[len]] = value;
+                        }
+                    })
+                    this.$on('click', function(handler) {
+                        try {
+                            (new Function(handler)).call(vcmp);
+                        } catch (e) {
+                            console.error('Ppt Handler Register Invalid.');
+                        }
+                    })
+                }
+            })
+        }
+    },
     methods: {
         showPpt: function(evt) {
             let elem = evt.target;
@@ -23,33 +58,7 @@ window.vm = new Vue({
                 if (vcmp === this.$root) {
                     vcmp = null;
                 }
-                new Vue({
-                    el: '.ppt',
-                    template: '<div class="ppt">' + (vcmp ? vcmp.$options.editor || '' : '') + '</div>',
-                    data() {
-                        return getVueCmpData(vcmp, true);
-                    },
-                    created() {
-                        this.$on('changeppt', function(name, value) {
-                            if (vcmp) {
-                                let names = name.split('.'),
-                                    data = vcmp,
-                                    len = names.length - 1;
-                                for (let i = 0; i < len; i++) {
-                                    data = data[names[i]];
-                                }
-                                data[names[len]] = value;
-                            }
-                        })
-                        this.$on('click', function(handler) {
-                            try {
-                                (new Function(handler)).call(vcmp);
-                            } catch (e) {
-                                console.error('Ppt Handler Register Invalid.');
-                            }
-                        })
-                    }
-                })
+                this.pptCmp = vcmp;
             }
         }
     }

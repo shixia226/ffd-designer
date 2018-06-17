@@ -24,15 +24,18 @@ Vue.component('widget-carousel', {
             </a>
         </div>`,
     props: ['controls', 'indicators'],
-    editor: `<editor-switch name="vcontrols" :value="this.vcontrols" label="With Controls"></editor-switch>
-        <editor-switch name="vindicators" :value="this.vindicators" label="With Indicators"></editor-switch>
-        <div v-for="(item, index) in items" :key="item.id">
-            <editor-text :name="'vitems.' + index + '.src'" :value="item.src" label="Picture"></editor-text>
-            <editor-text :name="'vitems.' + index + '.title'" :value="item.title" label="Title"></editor-text>
-            <editor-text :name="'vitems.' + index + '.description'" :value="item.description" label="Description"></editor-text>
-            <editor-button text="Remove" :handler="'this.vitems.splice(' + index + ', 1)'"></editor-button>
-            <hr class="my-4">
-        </div>
+    editor: `<editor-switch name="vcontrols" :value="controls" label="With Controls"></editor-switch>
+        <editor-switch name="vindicators" :value="indicators" label="With Indicators"></editor-switch>
+        <hr class="my-4">
+        <widget-collapse>
+            <div v-for="(item, index) in items" :key="item.id">
+                <editor-text :name="'vitems.' + index + '.src'" :value="item.src" label="Picture"></editor-text>
+                <editor-text :name="'vitems.' + index + '.title'" :value="item.title" label="Title"></editor-text>
+                <editor-text :name="'vitems.' + index + '.description'" :value="item.description" label="Description"></editor-text>
+                <editor-button text="Remove" :handler="'this.vitems.splice(' + index + ', 1)'"></editor-button>
+            </div>
+        </widget-collapse>
+        <hr class="my-4">
         <editor-button text="Add" handler="this.$options.add(this)"></editor-button>`,
     save(vm, space = '') {
         let html = [], items = vm.vitems;
