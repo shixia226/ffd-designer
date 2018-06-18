@@ -6,7 +6,9 @@ Vue.component('widget-list', {
                 <slot :name="item.id"></slot>
             </li>
         </ul>`,
-    editor: `<div v-for="(item, index) in items" class="mb-3"><editor-button :handler="'this.vitems.splice('+index+', 1)'" :text="'Remote Item '+index" :key="item.id"></editor-button></div>
+    editor: `<div v-for="(item, index) in items" class="mb-3">
+            <editor-button :handler="'this.vitems.splice('+index+', 1)'" :text="'Remote Item '+index" :key="item.id"></editor-button>
+        </div>
         <hr class="my-4">
         <editor-button handler="this.$options.add(this)" text="Add"></editor-button>`,
     add(vm) {

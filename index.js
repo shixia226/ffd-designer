@@ -67,6 +67,27 @@ window.vm = new Vue({
                 this.pptCmp = vcmp;
             }
         }
+    },
+    created() {
+        let vm = this;
+        new Vue({
+            el: '.designer-nav > .navbar',
+            data() {
+                return {
+                    preview: false
+                }
+            },
+            watch: {
+                preview(){
+                   let content = saveVue(vm).join('');
+                   document.querySelector('.modal-body').innerHTML = content;
+                   new Vue({
+                       el: '.modal-body',
+                       replace: false
+                   }) 
+                }
+            }
+        })
     }
 });
 
@@ -99,7 +120,7 @@ function getVueCmpData(vcmp) {
 function saveVue(vm, html, space) {
     html = html || [];
     space = space || '';
-    let tag = vm.$options.name || 'page',
+    let tag = vm.$options.name || 'div',
         $data = getVueCmpData(vm),
         cspace = (space || '\n') + '    ';
     html.push(space, '<', tag);
@@ -153,6 +174,3 @@ function getVueCmp(vm, elem) {
     }
     return getVueCmpByPelem(vm, pelems);
 }
-
-window.saveVue = saveVue;
-window.getVueCmp = getVueCmp;
