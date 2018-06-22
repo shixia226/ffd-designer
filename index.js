@@ -20,14 +20,14 @@ import './editors/editor-size.vue';
 import './editors/editor-button.vue';
 import './editors/editor-select.vue';
 
-window.vm = new Vue({
+new Vue({
     el: '.app',
     data: {
         pptCmp: undefined
     },
     watch: {
         pptCmp(vcmp) {
-            new Vue({
+            this.pptVue = new Vue({
                 el: '.ppt',
                 template: '<div class="ppt">' + (vcmp ? vcmp.$options.editor || '' : '') + '</div>',
                 data() {
@@ -52,6 +52,11 @@ window.vm = new Vue({
                             console.error('Ppt Handler Register Invalid.');
                         }
                     })
+                    this.$on('collapse', function(index, evt) {
+                        if (vcmp.active) {
+                            vcmp.active(index);
+                        }
+                    })
                 }
             })
         }
@@ -69,6 +74,17 @@ window.vm = new Vue({
         }
     },
     created() {
+        this.$on('collapse', function(index, evt) {
+            if (this.pptVue) {
+                let children = this.pptVue.$children;
+                for (let i = 0, len = children.length; i < len; i++) {
+                    let cmp = children[i];
+                    if (cmp.active) {
+                        cmp.active(index);
+                    }
+                }
+            }
+        })
         let vm = this;
         new Vue({
             el: '.designer-nav > .navbar',

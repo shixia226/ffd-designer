@@ -5,7 +5,7 @@ Vue.component('widget-collapse', {
             <div class="card" v-for="(item, index) in vitems" :key="item.id">
                 <div class="card-header">
                     <h5 class="mb-0">
-                        <button class="btn btn-link" data-toggle="collapse" :data-target="'#'+item.id">{{item.header}}</button>
+                        <button class="btn btn-link" data-toggle="collapse" :data-target="'#'+item.id" @click="$root.$emit('collapse', index, $event)">{{item.header}}</button>
                     </h5>
                 </div>
 
@@ -72,6 +72,7 @@ Vue.component('widget-collapse', {
                 this.$slots[id] = node;
                 items.push({
                     id: id,
+                    show: false,
                     header: VTool.attr(node, 'header') || ('Item ' + items.length),
                 })
             }
@@ -80,6 +81,12 @@ Vue.component('widget-collapse', {
         return {
             pid: VTool.random(),
             vitems: items
+        }
+    },
+    methods: {
+        active(index) {
+            this.vitems[this.activeIdx].show = false;
+            this.vitems[this.activeIdx = index].show = true;
         }
     }
 })
@@ -96,4 +103,5 @@ function setItemShow(items, vm) {
         }
     }
     items[idx].show = true;
+    vm.activeIdx = idx;
 }
