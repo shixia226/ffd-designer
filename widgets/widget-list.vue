@@ -2,7 +2,7 @@ import VTool from '../common/v-tool';
 
 Vue.component('widget-list', {
     template: `<ul class="list-group">
-            <li v-for="(item, index) in vitems" class="list-group-item" :key="item.id">
+            <li v-for="(item, index) in vitems" :class="['list-group-item', {active: item.active}]" :key="item.id" @click="active(index)">
                 <slot :name="item.id"></slot>
             </li>
         </ul>`,
@@ -11,25 +11,42 @@ Vue.component('widget-list', {
         </div>
         <hr class="my-4">
         <editor-button handler="this.$options.add(this)" text="Add"></editor-button>`,
+    props: ['selectable'],
     add(vm) {
         vm.vitems.push({
-            id: VTool.random()
+            id: VTool.random(),
+            active: false
         })
     },
     data(){
         let children = this.$slots.default, items = [];
-        for (var i = 0, len = children.length; i < len; i++) {
-            let node = children[i];
-            if (node.tag) {
-                let id = VTool.random();
-                this.$slots[id] = node;
-                items.push({
-                    id: id
-                })
+        if (children) {
+            for (var i = 0, len = children.length; i < len; i++) {
+                let node = children[i];
+                if (node.tag) {
+                    let id = VTool.random();
+                    this.$slots[id] = node;
+                    items.push({
+                        id: id,
+                        active: false
+                    })
+                }
             }
         }
         return {
             vitems: items
+        }
+    },
+    methods: {
+        active(index) {
+            if (this.selectable !== undefined) {
+                let items = this.vitems;
+                if (this.selectable !== 'multi' && !isNaN(this.lastAct)) {
+                    items[this.lastAct].active = false;
+                }
+                let item = items[this.lastAct = index];
+                item.active = !item.active;
+            }
         }
     }
 })

@@ -8,7 +8,7 @@ Vue.component('widget-text', {
     },
     data() {
         return {
-            vtext: VTool.text(this.$slots) || ''
+            vtext: VTool.text(this.$slots) || 'Text'
         }
     }
 })

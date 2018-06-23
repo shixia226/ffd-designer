@@ -34,10 +34,12 @@ Vue.component('widget-card', {
             vtext: undefined,
             vfooter: undefined,
         }, children = this.$slots.default;
-        for (let i = 0, len = children.length; i < len; i++) {
-            let item = children[i], name = VTool.attr(item, 'name');
-            if (name) {
-                data['v' + name] = name === 'logo' ? VTool.attr(item, 'src') : VTool.text(item);
+        if (children) {
+            for (let i = 0, len = children.length; i < len; i++) {
+                let item = children[i], name = VTool.attr(item, 'name');
+                if (name) {
+                    data['v' + name] = name === 'logo' ? VTool.attr(item, 'src') : VTool.text(item);
+                }
             }
         }
         return data;

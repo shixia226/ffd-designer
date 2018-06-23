@@ -20,6 +20,19 @@ import './editors/editor-size.vue';
 import './editors/editor-button.vue';
 import './editors/editor-select.vue';
 
+let widgetVm = new Vue({
+    el: '.widgets',
+    methods: {
+        getWidget() {
+            let elem = this.$el.querySelector('.show .active > span');
+            if (!elem) {
+                return;
+            }
+            return Vue.component(elem.getAttribute('widget'))
+        }
+    }
+});
+
 new Vue({
     el: '.app',
     data: {
@@ -52,7 +65,7 @@ new Vue({
                             console.error('Ppt Handler Register Invalid.');
                         }
                     })
-                    this.$on('collapse', function(index, evt) {
+                    this.$on('collapse', function(index) {
                         if (vcmp.active) {
                             vcmp.active(index);
                         }
@@ -74,7 +87,7 @@ new Vue({
         }
     },
     created() {
-        this.$on('collapse', function(index, evt) {
+        this.$on('collapse', function(index) {
             if (this.pptVue) {
                 let children = this.pptVue.$children;
                 for (let i = 0, len = children.length; i < len; i++) {
@@ -94,13 +107,46 @@ new Vue({
                 }
             },
             watch: {
-                preview(){
-                   let content = saveVue(vm).join('');
-                   document.querySelector('.modal-body').innerHTML = content;
-                   new Vue({
-                       el: '.modal-body',
-                       replace: false
-                   }) 
+                preview() {
+                    let content = saveVue(vm).join('');
+                    document.querySelector('.modal-body').innerHTML = content;
+                    new Vue({
+                        el: '.modal-body',
+                        replace: false
+                    })
+                }
+            },
+            methods: {
+                add() {
+                    let Widget = widgetVm.getWidget();
+                    if (Widget) {
+                        let ncmp = (new Widget()).$mount();
+                        let vcmp = vm.pptCmp;
+                        if (vcmp) {
+                            while (vcmp && vcmp !== vm) {
+                                if (vcmp.add && vcmp.add(ncmp) !== false) {
+                                    ncmp.$parent = vcmp;
+                                    ncmp.$root = vcmp.$root;
+                                    vm.pptCmp = ncmp;
+                                    return;
+                                }
+                                vcmp = vcmp.$parent;
+                            }
+                        }
+                        vm.$el.appendChild(ncmp.$el);
+                        vm.$children.push(ncmp);
+                        vm.pptCmp = ncmp;
+                        ncmp.$parent = vm;
+                        ncmp.$root = vm;
+                    }
+                },
+                remove() {
+                    let vcmp = vm.pptCmp;
+                    if (vcmp) {
+                        vcmp.$destroy();
+                        vcmp.$parent.$el.removeChild(vcmp.$el);
+                        vm.pptCmp = null;
+                    }
                 }
             }
         })

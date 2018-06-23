@@ -7,10 +7,10 @@ Vue.component('widget-button', {
         <editor-text name="vtext" :value="text" label="Text"></editor-text>`,
     data(){
         return {
-            vtheme: this.theme,
+            vtheme: this.theme || 'primary',
             vsize: this.size || '',
             vblock: this.block,
-            vtext: this.text
+            vtext: this.text || 'Button'
         }
     }
 });

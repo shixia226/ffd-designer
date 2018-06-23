@@ -6,5 +6,11 @@ Vue.component('widget-container', {
         return {
             vclazz: this.clazz
         }
+    },
+    methods: {
+        add(vcmp) {
+            this.$el.appendChild(vcmp.$el);
+            this.$children.push(vcmp);
+        }
     }
 })

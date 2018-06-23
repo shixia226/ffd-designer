@@ -8,7 +8,17 @@ html {
 body {
     width: 100%;
     height: 100%;
-    padding: 0 260px 0 0;
+    padding: 0 260px 0 200px;
+    .widgets {
+        position: absolute;
+        top: 0;
+        left: 0;
+        width: 200px;
+        height: 100%;
+        padding-right: 5px;
+        border-right: 1px solid #CCC;
+        overflow: auto;
+    }
     .ppt {
         position: absolute;
         top: 0;

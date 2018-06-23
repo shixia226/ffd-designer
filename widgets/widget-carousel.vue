@@ -50,22 +50,24 @@ Vue.component('widget-carousel', {
     },
     data() {
         let items = [], children = this.$slots.default;
-        for (let i = 0, len = children.length; i < len; i++) {
-            let nodes = children[i].children;
-            if (nodes) {
-                let item = { //这里一定要罗列所有的属性，否则当没有某个属性时，vue无法给予该属性监听事件导致编辑更改无法及时相应
-                    id: VTool.random(),
-                    src: undefined,
-                    title: undefined,
-                    description: undefined
-                };
-                for (let k = 0, klen = nodes.length; k < klen; k++) {
-                    let node = nodes[k], name = VTool.attr(node, 'name');
-                    if (name) {
-                        item[name] = name === 'src' ? VTool.attr(node, 'src') : VTool.text(node);
+        if (children) {
+            for (let i = 0, len = children.length; i < len; i++) {
+                let nodes = children[i].children;
+                if (nodes) {
+                    let item = { //这里一定要罗列所有的属性，否则当没有某个属性时，vue无法给予该属性监听事件导致编辑更改无法及时相应
+                        id: VTool.random(),
+                        src: undefined,
+                        title: undefined,
+                        description: undefined
+                    };
+                    for (let k = 0, klen = nodes.length; k < klen; k++) {
+                        let node = nodes[k], name = VTool.attr(node, 'name');
+                        if (name) {
+                            item[name] = name === 'src' ? VTool.attr(node, 'src') : VTool.text(node);
+                        }
                     }
+                    items.push(item);
                 }
-                items.push(item);
             }
         }
         return {

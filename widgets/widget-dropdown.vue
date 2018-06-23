@@ -37,16 +37,18 @@ Vue.component('widget-dropdown', {
     },
     data() {
         let children = this.$slots.default, button, items = [];
-        for (let i = 0, len = children.length; i < len; i++) {
-            let node = children[i], tag = node.tag, text = VTool.text(node);
-            if (tag === 'button') {
-                button = text || 'Dropdown';
-            } else if(text) {
-                items.push({
-                    id: VTool.random(),
-                    link: VTool.attr(node, 'href'),
-                    text: text
-                });
+        if (children) {
+            for (let i = 0, len = children.length; i < len; i++) {
+                let node = children[i], tag = node.tag, text = VTool.text(node);
+                if (tag === 'button') {
+                    button = text || 'Dropdown';
+                } else if(text) {
+                    items.push({
+                        id: VTool.random(),
+                        link: VTool.attr(node, 'href'),
+                        text: text
+                    });
+                }
             }
         }
         return {

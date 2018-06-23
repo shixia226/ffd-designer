@@ -8,8 +8,8 @@ Vue.component('widget-breadcrumb', {
         </nav>`,
     editor: `<widget-collapse>
             <div v-for="(item, index) in items" :key="item.id">
-                <editor-text :name="'vitems.' + index + '.text'" :value="item.text"></editor-text>
-                <editor-text :name="'vitems.' + index + '.link'" :value="item.link"></editor-text>
+                <editor-text :name="'vitems.' + index + '.text'" :value="item.text" label="Text"></editor-text>
+                <editor-text :name="'vitems.' + index + '.link'" :value="item.link" label="Link"></editor-text>
                 <editor-button text="Remove" :handler="'this.vitems.splice(' + index + ', 1)'"></editor-button>
             </div>
         </widget-collapse>
@@ -38,14 +38,16 @@ Vue.component('widget-breadcrumb', {
     },
     data() {
         let items = [], children = this.$slots.default;
-        for (let i = 0, len = children.length; i < len; i++) {
-            let item = children[i], text = VTool.text(item);
-            if (text) {
-                items.push({
-                    id: VTool.random(),
-                    link: VTool.attr(item, 'href'),
-                    text: text
-                });
+        if (children) {
+            for (let i = 0, len = children.length; i < len; i++) {
+                let item = children[i], text = VTool.text(item);
+                if (text) {
+                    items.push({
+                        id: VTool.random(),
+                        link: VTool.attr(item, 'href'),
+                        text: text
+                    });
+                }
             }
         }
         return {

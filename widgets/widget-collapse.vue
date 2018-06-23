@@ -2,20 +2,21 @@ import VTool from '../common/v-tool';
 
 Vue.component('widget-collapse', {
     template: `<div :id="pid">
-            <div class="card" v-for="(item, index) in vitems" :key="item.id">
+            <div :class="['card', cardClass||'']" v-for="(item, index) in vitems" :key="item.id">
                 <div class="card-header">
                     <h5 class="mb-0">
-                        <button class="btn btn-link" data-toggle="collapse" :data-target="'#'+item.id" @click="$root.$emit('collapse', index, $event)">{{item.header}}</button>
+                        <button class="btn btn-link" data-toggle="collapse" :data-target="'#'+item.id" @click="active(index)">{{item.header}}</button>
                     </h5>
                 </div>
 
                 <div :id="item.id" :class="['collapse', {show:item.show}]" :data-parent="'#'+pid">
-                    <div class="card-body">
+                    <div :class="['card-body', bodyClass||'']">
                         <slot :name="item.id"></slot>
                     </div>
                 </div>
             </div>
         </div>`,
+    props: ['cardClass', 'bodyClass'],
     editor: `<widget-collapse>
             <div v-for="(item, index) in items" :key="item.id">
                 <editor-text :name="'vitems.' + index + '.header'" :value="item.header"></editor-text>
@@ -25,13 +26,22 @@ Vue.component('widget-collapse', {
         <hr class="my-4">
         <editor-button text="Add" handler="this.$options.add(this)"></editor-button>`,
     add(vm) {
-        vm.vitems.push({ id: VTool.random(), header: 'New Item' });
+        let items = vm.vitems, id = VTool.random();
+        vm.$slots[id] = vm._c('div');
+        items.push({ id: id, header: 'New Item', show: false });
+        vm.active(items.length - 1);
     },
     save(vm, space, saveVue) {
-        let html = [], children = vm.$children, items = vm.vitems, cspace = space + '    ';
-        for (let i = 0, len = children.length; i < len; i++) {
-            html.push(space, '<div header="', items[i].header, '">');
-            saveVue(children[i], html, cspace);
+        let html = [], $slots = vm.$slots, items = vm.vitems, cspace = space + '    ', children = vm.$children, idxs = [];
+        for (let i = 0, len = items.length; i < len; i++) {
+            let item = items[i], pelem = $slots[item.id].elm;
+            html.push(space, '<div header="', item.header, '">');
+            for (let k = 0, klen = children.length; k < klen; k++) {
+                let vcmp = children[k];
+                if (!idxs[k] && pelem.contains(vcmp.$el)) {
+                    saveVue(vcmp, html, cspace);
+                }
+            }
             html.push(space, '</div>');
         }
         return html.join('');
@@ -47,6 +57,28 @@ Vue.component('widget-collapse', {
             }
             // 重写对应关系
             let children = this.$slots.default, items = [];
+            if (children) {
+                for (let i = 0, len = children.length; i < len; i++) {
+                    let node = children[i];
+                    if (node.tag) {
+                        let id = VTool.random();
+                        this.$slots[id] = node;
+                        items.push({
+                            id: id,
+                            show: false,
+                            header: VTool.attr(node, 'header') || ('Item ' + items.length),
+                        })
+                    }
+                }
+                setItemShow(items, this);
+            }
+            this.vitems = items;
+            return _render.apply(this, arguments);
+        }
+    },
+    data() {
+        let children = this.$slots.default, items = [];
+        if (children) {
             for (let i = 0, len = children.length; i < len; i++) {
                 let node = children[i];
                 if (node.tag) {
@@ -54,30 +86,13 @@ Vue.component('widget-collapse', {
                     this.$slots[id] = node;
                     items.push({
                         id: id,
+                        show: false,
                         header: VTool.attr(node, 'header') || ('Item ' + items.length),
                     })
                 }
             }
             setItemShow(items, this);
-            this.vitems = items;
-            return _render.apply(this, arguments);
         }
-    },
-    data() {
-        let children = this.$slots.default, items = [];
-        for (let i = 0, len = children.length; i < len; i++) {
-            let node = children[i];
-            if (node.tag) {
-                let id = VTool.random();
-                this.$slots[id] = node;
-                items.push({
-                    id: id,
-                    show: false,
-                    header: VTool.attr(node, 'header') || ('Item ' + items.length),
-                })
-            }
-        }
-        setItemShow(items, this);
         return {
             pid: VTool.random(),
             vitems: items
@@ -85,8 +100,21 @@ Vue.component('widget-collapse', {
     },
     methods: {
         active(index) {
-            this.vitems[this.activeIdx].show = false;
+            if (index === this.activeIdx) return;
+            if (!isNaN(this.activeIdx)) {
+                this.vitems[this.activeIdx].show = false;
+            }
             this.vitems[this.activeIdx = index].show = true;
+            this.$nextTick(function() {
+                this.$root.$emit('collapse', index);
+            })
+        },
+        add(vcmp) {
+            if (isNaN(this.activeIdx)) {
+                return false;
+            }
+            this.$slots[this.vitems[this.activeIdx].id].elm.appendChild(vcmp.$el);
+            this.$children.push(vcmp);
         }
     }
 })

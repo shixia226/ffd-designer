@@ -7,10 +7,31 @@
         <link rel="stylesheet" href="https://cdn.bootcss.com/bootstrap/4.0.0/css/bootstrap.min.css" integrity="sha384-Gn5384xqQ1aoWXA+058RXPxPg6fy4IWvTNh0E263XmFcJlSAwiGgFAW/dAiS6JXm" crossorigin="anonymous">
     </head>
     <body>
+        <div class="widgets">
+            <widget-collapse card-class="b-0" body-class="p-0">
+                <widget-list header="basic" selectable>
+                    <span widget="widget-badge">Badage</span>
+                    <span widget="widget-button">Button</span>
+                    <span widget="widget-text">Text</span>
+                    <span widget="widget-input">Input</span>
+                    <span widget="widget-dropdown">Dropdown</span>
+                    <span widget="widget-pagination">Pagination</span>
+                </widget-list>
+                <widget-list header="advance" selectable>
+                    <span widget="widget-breadcrumb">Breadcrumb</span>
+                    <span widget="widget-card">Card</span>
+                    <span widget="widget-carousel">Carousel</span>
+                    <span widget="widget-collapse">Collapse</span>
+                    <span widget="widget-spanst">List</span>
+                </widget-list>
+            </widget-collapse>
+        </div>
         <div class="designer">
             <div class="designer-nav">
                 <nav class="navbar navbar-expand-lg navbar-light bg-light">
-                    <button type="button" class="btn btn-primary btn-sm" data-toggle="modal" data-target="#previewDialog" @click="preview=!preview">Preview</button>
+                    <button type="button" class="btn btn-primary btn-sm m-2" data-toggle="modal" data-target="#previewDialog" @click="preview=!preview">Preview</button>
+                    <button type="button" class="btn btn-primary btn-sm m-2" @click="add">Add</button>
+                    <button type="button" class="btn btn-primary btn-sm m-2" @click="remove">Remove</button>
                 </nav>
                 <div class="modal fade" tabindex="-1" role="dialog" id="previewDialog">
                     <div class="modal-dialog modal-dialog-centered" role="document">
@@ -48,11 +69,9 @@
                         <widget-input placeholder="Address" prepend="https://" append=".com"></widget-input>
                     </div>
                     <div header="Button">
-                        <widget-container>
-                            <widget-badge></widget-badge>
-                            <widget-button theme="outline-secondary" size="lg" text="Secondary Button"></widget-button>
-                            <widget-button theme="primary" block="true" text="Button"></widget-button>
-                        </widget-container>
+                        <widget-badge></widget-badge>
+                        <widget-button theme="outline-secondary" size="lg" text="Secondary Button"></widget-button>
+                        <widget-button theme="primary" block="true" text="Button"></widget-button>
                     </div>
                     <div header="Dropdown">
                         <widget-dropdown>
