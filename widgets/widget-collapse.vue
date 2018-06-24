@@ -31,20 +31,25 @@ Vue.component('widget-collapse', {
         items.push({ id: id, header: 'New Item', show: false });
         vm.active(items.length - 1);
     },
-    save(vm, space, saveVue) {
-        let html = [], $slots = vm.$slots, items = vm.vitems, cspace = space + '    ', children = vm.$children, idxs = [];
+    save(vm, html, space) {
+        html = html || [];
+        let $slots = vm.$slots,
+            items = vm.vitems,
+            cspace = space + '    ',
+            $children = VTool.children(vm),
+            idxs = [];
         for (let i = 0, len = items.length; i < len; i++) {
             let item = items[i], pelem = $slots[item.id].elm;
             html.push(space, '<div header="', item.header, '">');
-            for (let k = 0, klen = children.length; k < klen; k++) {
-                let vcmp = children[k];
+            for (let k = 0, klen = $children.length; k < klen; k++) {
+                let vcmp = $children[k];
                 if (!idxs[k] && pelem.contains(vcmp.$el)) {
-                    saveVue(vcmp, html, cspace);
+                    VTool.save(vcmp, html, cspace);
                 }
             }
             html.push(space, '</div>');
         }
-        return html.join('');
+        return html;
     },
     created() {
         let _render = this._render;
@@ -109,12 +114,12 @@ Vue.component('widget-collapse', {
                 this.$root.$emit('collapse', index);
             })
         },
-        add(vcmp) {
+        add(vm) {
             if (isNaN(this.activeIdx)) {
                 return false;
             }
-            this.$slots[this.vitems[this.activeIdx].id].elm.appendChild(vcmp.$el);
-            this.$children.push(vcmp);
+            this.$slots[this.vitems[this.activeIdx].id].elm.appendChild(vm.$el);
+            this.$children.push(vm);
         }
     }
 })

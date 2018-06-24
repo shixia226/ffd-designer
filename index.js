@@ -1,4 +1,5 @@
 import './index.scss';
+import VTool from './common/v-tool';
 
 import './widgets/widget-badge.vue';
 import './widgets/widget-button.vue';
@@ -44,7 +45,7 @@ new Vue({
                 el: '.ppt',
                 template: '<div class="ppt">' + (vcmp ? vcmp.$options.editor || '' : '') + '</div>',
                 data() {
-                    return getVueCmpData(vcmp, true);
+                    return VTool.data(vcmp, true);
                 },
                 created() {
                     this.$on('changeppt', function(name, value) {
@@ -108,7 +109,7 @@ new Vue({
             },
             watch: {
                 preview() {
-                    let content = saveVue(vm).join('');
+                    let content = VTool.save(vm).join('');
                     document.querySelector('.modal-body').innerHTML = content;
                     new Vue({
                         el: '.modal-body',
@@ -144,8 +145,31 @@ new Vue({
                     let vcmp = vm.pptCmp;
                     if (vcmp) {
                         vcmp.$destroy();
-                        vcmp.$parent.$el.removeChild(vcmp.$el);
+                        vcmp.$el.parentNode.removeChild(vcmp.$el);
                         vm.pptCmp = null;
+                    }
+                },
+                move() {
+                    let vcmp = vm.pptCmp;
+                    if (vcmp) {
+                        let $el = vcmp.$el,
+                            el;
+                        if (arguments[0]) {
+                            el = getElem($el, 'previousSibling');
+                            if (el) {
+                                $el.parentNode.insertBefore($el, el);
+                            }
+                        } else {
+                            el = getElem($el, 'nextSibling');
+                            if (el) {
+                                el = getElem(el, 'nextSibling');
+                                if (el) {
+                                    $el.parentNode.insertBefore($el, el);
+                                } else {
+                                    $el.parentNode.appendChild($el);
+                                }
+                            }
+                        }
                     }
                 }
             }
@@ -153,62 +177,11 @@ new Vue({
     }
 });
 
-function getVueCmpData(vcmp) {
-    if (!vcmp) return {};
-    let $data = vcmp.$data,
-        data = {};
-    if (arguments[1]) {
-        let names = Object.getOwnPropertyNames($data);
-        for (let i = 0, len = names.length; i < len; i++) {
-            let name = names[i];
-            if (name.charAt(0) === 'v') {
-                data[name.substr(1)] = $data[name];
-            }
-        }
-    } else {
-        let names = vcmp.$options._propKeys;
-        if (names) {
-            for (let k = 0, klen = names.length; k < klen; k++) {
-                let name = names[k],
-                    vname = 'v' + name;
-                data[name] = $data[vname];
-            }
-        }
-    }
-    return data;
-}
-
-
-function saveVue(vm, html, space) {
-    html = html || [];
-    space = space || '';
-    let tag = vm.$options.name || 'div',
-        $data = getVueCmpData(vm),
-        cspace = (space || '\n') + '    ';
-    html.push(space, '<', tag);
-    for (let name in $data) {
-        if ($data[name]) {
-            html.push(' ', name, '="', $data[name], '"');
-        }
-    }
-    html.push('>');
-    let htmlLen = html.length;
-    if (vm.$options.save) {
-        html.push(vm.$options.save(vm, cspace, saveVue));
-    } else {
-        let $children = vm.$children;
-        if ($children) {
-            for (let i = 0, len = $children.length; i < len; i++) {
-                let vcmp = $children[i];
-                saveVue(vcmp, html, cspace);
-            }
-        }
-    }
-    if (htmlLen < html.length) {
-        html.push(space || '\n');
-    }
-    html.push('</', tag, '>');
-    return html;
+function getElem(el, name) {
+    do {
+        el = el[name];
+    } while (el && el.nodeType !== 1);
+    return el;
 }
 
 function getVueCmpByPelem(vm, pelems) {

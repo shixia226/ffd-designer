@@ -22,7 +22,8 @@
                     <span widget="widget-card">Card</span>
                     <span widget="widget-carousel">Carousel</span>
                     <span widget="widget-collapse">Collapse</span>
-                    <span widget="widget-spanst">List</span>
+                    <span widget="widget-list">List</span>
+                    <span widget="widget-container">Container</span>
                 </widget-list>
             </widget-collapse>
         </div>
@@ -32,6 +33,8 @@
                     <button type="button" class="btn btn-primary btn-sm m-2" data-toggle="modal" data-target="#previewDialog" @click="preview=!preview">Preview</button>
                     <button type="button" class="btn btn-primary btn-sm m-2" @click="add">Add</button>
                     <button type="button" class="btn btn-primary btn-sm m-2" @click="remove">Remove</button>
+                    <button type="button" class="btn btn-primary btn-sm m-2" @click="move(true)">Move Up</button>
+                    <button type="button" class="btn btn-primary btn-sm m-2" @click="move(false)">Move Down</button>
                 </nav>
                 <div class="modal fade" tabindex="-1" role="dialog" id="previewDialog">
                     <div class="modal-dialog modal-dialog-centered" role="document">

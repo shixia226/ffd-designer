@@ -17,13 +17,15 @@ Vue.component('widget-card', {
         <editor-text name="vsubTitle" :value="subTitle" label="SubTitle"></editor-text>
         <editor-text name="vtext" :value="text" label="Text"></editor-text>
         <editor-text name="vfooter" :value="footer" label="Footer"></editor-text>`,
-    save(vm, space = '') {
-        return `${space}<h1 name="header">${vm.vheader||''}</h1>
+    save(vm, html, space = '') {
+        html = html || [];
+        html.push(`${space}<h1 name="header">${vm.vheader||''}</h1>
             ${vm.vlogo ? space + `<img name="logo" src="${vm.vlogo}" />` : ''}
             ${space}<h2 name="title">${vm.vtitle||''}</h2>
             ${space}<h3 name="subTitle">${vm.vsubTitle||''}</h3>
             ${space}<p name="text">${vm.vtext||''}</p>
-            ${space}<h1 name="footer">${vm.vfooter||''}</h1>`.replace(/ +\n/g, '');
+            ${space}<h1 name="footer">${vm.vfooter||''}</h1>`.replace(/ +\n/g, ''));
+        return html;
     },
     data() {
         let data = {

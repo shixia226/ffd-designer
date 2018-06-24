@@ -15,8 +15,9 @@ Vue.component('widget-breadcrumb', {
         </widget-collapse>
         <hr class="my-4">
         <editor-button text="Add" handler="this.$options.add(this)"></editor-button>`,
-    save(vm, space = '') {
-        let html = [], items = vm.vitems;
+    save(vm, html, space = '') {
+        html = html || [];
+        let items = vm.vitems;
         for (let i = 0, len = items.length; i < len; i++) {
             let item = items[i],
                 link = item.link,
@@ -31,7 +32,7 @@ Vue.component('widget-breadcrumb', {
             }
             html.push('>', item.text || '', tag);
         }
-        return html.join('');
+        return html;
     },
     add(vm) {
         vm.vitems.push({text: 'New Item', link: '', id: VTool.random()});

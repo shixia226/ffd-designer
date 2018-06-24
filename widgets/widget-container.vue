@@ -8,9 +8,9 @@ Vue.component('widget-container', {
         }
     },
     methods: {
-        add(vcmp) {
-            this.$el.appendChild(vcmp.$el);
-            this.$children.push(vcmp);
+        add(vm) {
+            this.$el.appendChild(vm.$el);
+            this.$children.push(vm);
         }
     }
 })

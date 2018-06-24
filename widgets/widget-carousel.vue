@@ -37,13 +37,14 @@ Vue.component('widget-carousel', {
         </widget-collapse>
         <hr class="my-4">
         <editor-button text="Add" handler="this.$options.add(this)"></editor-button>`,
-    save(vm, space = '') {
-        let html = [], items = vm.vitems;
+    save(vm, html, space = '') {
+        html = html || [];
+        let items = vm.vitems;
         for (let i = 0, len = items.length; i < len; i++) {
             let item = items[i];
             html.push(`${space}<div><img name="src" src="${item.src || ''}" /><h3 name="title">${item.title || ''}</h3><h4 name="description">${item.description || ''}</h4></div>`)
         }
-        return html.join('');
+        return html;
     },
     add(vm) {
         vm.vitems.push({src: '', title: '', description: '', id: VTool.random()});

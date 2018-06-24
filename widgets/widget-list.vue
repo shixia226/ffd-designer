@@ -13,10 +13,10 @@ Vue.component('widget-list', {
         <editor-button handler="this.$options.add(this)" text="Add"></editor-button>`,
     props: ['selectable'],
     add(vm) {
-        vm.vitems.push({
-            id: VTool.random(),
-            active: false
-        })
+        let items = vm.vitems, id = VTool.random();
+        vm.$slots[id] = vm._c('div');
+        items.push({ id: id, active: false });
+        vm.active(items.length - 1);
     },
     data(){
         let children = this.$slots.default, items = [];
@@ -46,7 +46,16 @@ Vue.component('widget-list', {
                 }
                 let item = items[this.lastAct = index];
                 item.active = !item.active;
+            } else {
+                this.lastAct = index;
             }
+        },
+        add(vm) {
+            if (isNaN(this.lastAct)) {
+                return false;
+            }
+            this.$slots[this.vitems[this.lastAct].id].elm.appendChild(vm.$el);
+            this.$children.push(vm);
         }
     }
 })
