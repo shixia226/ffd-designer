@@ -1,13 +1,16 @@
 const path = require('path');
 
 module.exports = {
-    entry: './index.js',
+    entry: {
+        index: './index.js',
+        selector: './selector.js'
+    },
     output: {
-        filename: 'index.js'
+        filename: '[name].js'
     },
     module: {
         rules: [{
-            test: /^[^.]+\.scss$/,
+            test: /\.scss$/,
             use: [
                 'style-loader',
                 'css-loader',

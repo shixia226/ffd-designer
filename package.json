@@ -21,9 +21,11 @@
     "babel-plugin-transform-vue-jsx": "^3.7.0",
     "babel-preset-env": "^1.7.0",
     "css-loader": "^0.28.11",
+    "ffd-selector": "^1.0.1",
     "node-sass": "^4.9.0",
     "sass-core": "^1.0.0",
     "sass-loader": "^7.0.3",
     "style-loader": "^0.21.0"
-  }
+  },
+  "dependencies": {}
 }
