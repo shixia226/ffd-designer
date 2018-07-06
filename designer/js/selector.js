@@ -28,7 +28,7 @@ export default {
                     dsVm.pptCmp = vm;
                 }
             },
-            ondragover(target, over) {
+            ondragover(target) {
                 let vm = getVueCmp(dsVm, target);
                 while (vm && vm !== dsVm && !vm.add) {
                     vm = getVueCmp(dsVm, vm.$el.parentNode);
@@ -36,6 +36,11 @@ export default {
                 if (vm) {
                     $(vm.$el).addClass('droppable');
                     return vm;
+                }
+            },
+            ondraghover(target, over) {
+                if (over.hover) {
+                    over.hover(target);
                 }
             },
             ondragstart(target) {
@@ -68,6 +73,7 @@ export default {
                             vm.$parent = over;
                         }
                     }
+                    elems[0].scrollIntoView(true);
                     Selector.select(true);
                 } else {
                     let Widget = Vue.component(start.widget);

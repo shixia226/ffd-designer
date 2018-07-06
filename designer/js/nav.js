@@ -1,4 +1,5 @@
 import VTool from '../../common/v-tool';
+import Selector from './selector';
 
 export default function(vm, el) {
     new Vue({
@@ -26,6 +27,7 @@ export default function(vm, el) {
                     vcmp.$el.parentNode.removeChild(vcmp.$el);
                     vm.pptCmp = null;
                 }
+                Selector.select();
             }
         }
     })

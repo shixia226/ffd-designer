@@ -40,6 +40,11 @@ export default function() {
                         }
                     }
                 }
+            });
+            this.$on('resize', function() {
+                this.$nextTick(function() {
+                    Selector.select(true);
+                })
             })
             Selector.init(this, $('.app')[0]);
             Nav(this, '.designer-nav > .navbar');

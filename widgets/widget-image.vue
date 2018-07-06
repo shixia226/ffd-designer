@@ -1,5 +1,5 @@
 Vue.component('widget-image', {
-    template: `<img :class="vtheme" :src="vsrc" :style="style" />`,
+    template: `<img :class="vtheme" :src="vsrc" :style="style" @load="$root.$emit('resize')" />`,
     props: ['theme', 'src', 'width', 'height'],
     resizable: true,
     editor: `
@@ -26,8 +26,14 @@ Vue.component('widget-image', {
             this.vheight = height + 'px';
         }
     },
+    watch: {
+        vtheme: function() {
+            this.$root.$emit('resize');
+        }
+    },
     computed:{
         style(){
+            this.$root.$emit('resize');
             return {
                 width: formatSize(this.vwidth),
                 height: formatSize(this.vheight)

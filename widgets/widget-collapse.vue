@@ -2,7 +2,7 @@ import VTool from '../common/v-tool';
 
 Vue.component('widget-collapse', {
     template: `<div :id="pid">
-            <div :class="['card', cardClass||'']" v-for="(item, index) in vitems" :key="item.id">
+            <div :class="['card', cardClass||'']" v-for="(item, index) in vitems" :key="item.id" :data-item="index">
                 <div class="card-header">
                     <h5 class="mb-0">
                         <button class="btn btn-link" data-toggle="collapse" :data-target="'#'+item.id" @click="active(index)">{{item.header}}</button>
@@ -113,6 +113,12 @@ Vue.component('widget-collapse', {
             this.$nextTick(function() {
                 this.$root.$emit('collapse', index);
             })
+        },
+        hover(target) {
+            let index = $(target).closest('[data-item]').attr('data-item');
+            if (index) {
+                this.active(parseInt(index));
+            }
         },
         add(vm) {
             if (isNaN(this.activeIdx)) {
