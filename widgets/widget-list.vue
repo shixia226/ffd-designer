@@ -50,12 +50,10 @@ Vue.component('widget-list', {
                 this.lastAct = index;
             }
         },
-        add(vm) {
-            if (isNaN(this.lastAct)) {
-                return false;
+        droppable() {
+            if (!isNaN(this.lastAct)) {
+                this.$slots[this.vitems[this.lastAct].id].elm    
             }
-            this.$slots[this.vitems[this.lastAct].id].elm.appendChild(vm.$el);
-            this.$children.push(vm);
         }
     }
 })

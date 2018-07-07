@@ -1,4 +1,5 @@
 import Selector from 'ffd-selector';
+import { Timeout } from 'ffd-util';
 
 export default {
     init(dsVm, el) {
@@ -28,19 +29,59 @@ export default {
                     dsVm.pptCmp = vm;
                 }
             },
-            ondragover(target) {
-                let vm = getVueCmp(dsVm, target);
-                while (vm && vm !== dsVm && !vm.add) {
+            ondragover(target, over) {
+                let vm = getVueCmp(dsVm, target),
+                    dropelem;
+                while (vm && (!vm.droppable || !(dropelem = vm.droppable()))) {
+                    if (vm === dsVm) break;
                     vm = getVueCmp(dsVm, vm.$el.parentNode);
                 }
                 if (vm) {
-                    $(vm.$el).addClass('droppable');
-                    return vm;
+                    let helper = over && over.helper;
+                    if (over && over.vm === vm) {
+                        over.dropelem = dropelem;
+                    } else {
+                        if (!helper) {
+                            helper = document.createElement('div');
+                            helper.className = 'drop-helper';
+                        }
+                        over = { vm: vm, dropelem: dropelem, helper: helper };
+                        $(vm.$el).addClass('droppable');
+                    }
+                    Timeout.remove(over.timer);
+                    while (target) {
+                        let pelem = target.parentNode;
+                        if (pelem === dropelem) {
+                            break;
+                        }
+                        target = pelem;
+                    }
+                    if (target) {
+                        if (target !== helper) {
+                            dropelem.insertBefore(helper, target);
+                        }
+                    } else if (helper.parentNode) {
+                        over.timer = Timeout.add({
+                            handler: dropelem.appendChild,
+                            context: dropelem,
+                            args: [helper],
+                            unique: true
+                        });
+                    } else {
+                        dropelem.appendChild(helper);
+                    }
+                    return over;
                 }
             },
             ondraghover(target, over) {
-                if (over.hover) {
-                    over.hover(target);
+                let vm = over.vm;
+                if (vm.hover) {
+                    vm.hover(target);
+                    let dropelem = vm.droppable();
+                    if (dropelem !== over.dropelem) {
+                        dropelem.appendChild(over.helper);
+                        over.dropelem = dropelem;
+                    }
                 }
             },
             ondragstart(target) {
@@ -62,16 +103,20 @@ export default {
                 }
             },
             ondragout(over) {
-                $(over.$el).removeClass('droppable')
+                Timeout.remove(over.timer);
+                $(over.vm.$el).removeClass('droppable');
             },
             ondrop(over, start) {
-                let elems = start.elems;
+                let elems = start.elems,
+                    dropelem = over.dropelem,
+                    helper = over.helper,
+                    pvm = over.vm;
                 if (elems) {
                     for (let i = 0, len = elems.length; i < len; i++) {
                         let vm = getVueCmp(dsVm, elems[i]);
-                        if (over.add(vm) !== false) {
-                            vm.$parent = over;
-                        }
+                        dropelem.insertBefore(vm.$el, helper);
+                        pvm.$children.push(vm);
+                        vm.$parent = pvm;
                     }
                     elems[0].scrollIntoView(true);
                     Selector.select(true);
@@ -79,15 +124,15 @@ export default {
                     let Widget = Vue.component(start.widget);
                     if (Widget) {
                         let vm = (new Widget()).$mount();
-                        if (over.add(vm) !== false) {
-                            vm.$parent = over;
-                            vm.$root = over.$root;
-                            dsVm.pptCmp = vm;
-                            vm.$el.scrollIntoView(true);
-                            Selector.select([vm.$el], vm.$options.resizable);
-                        }
+                        dropelem.insertBefore(vm.$el, helper);
+                        vm.$parent = pvm;
+                        vm.$root = pvm.$root;
+                        dsVm.pptCmp = vm;
+                        vm.$el.scrollIntoView(true);
+                        Selector.select([vm.$el], vm.$options.resizable);
                     }
                 }
+                helper.parentNode.removeChild(helper);
             },
             onresize(elems, rw, rh) {
                 for (let i = 0, len = elems.length; i < len; i++) {

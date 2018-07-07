@@ -120,12 +120,10 @@ Vue.component('widget-collapse', {
                 this.active(parseInt(index));
             }
         },
-        add(vm) {
-            if (isNaN(this.activeIdx)) {
-                return false;
+        droppable() {
+            if (!isNaN(this.activeIdx)) {
+                return this.$slots[this.vitems[this.activeIdx].id].elm;
             }
-            this.$slots[this.vitems[this.activeIdx].id].elm.appendChild(vm.$el);
-            this.$children.push(vm);
         }
     }
 })

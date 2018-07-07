@@ -8,9 +8,8 @@ Vue.component('widget-container', {
         }
     },
     methods: {
-        add(vm) {
-            this.$el.appendChild(vm.$el);
-            this.$children.push(vm);
+        droppable() {
+            return this.$el;
         }
     }
 })

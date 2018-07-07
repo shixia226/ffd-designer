@@ -18,10 +18,8 @@ export default function() {
             mousedown(evt) {
                 Selector.mousedown(evt);
             },
-            add(vm) {
-                this.$el.appendChild(vm.$el);
-                this.$children.push(vm);
-                vm.$parent = this;
+            droppable() {
+                return this.$el;
             },
             refreshPpt() {
                 if (this.pptCmp) {
