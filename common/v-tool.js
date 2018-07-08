@@ -6,7 +6,7 @@ export default {
             for (let i = 0, len = children.length; i < len; i++) {
                 text.push(children[i].text);
             }
-            return text.join('');
+            return text.join('').trim();
         }
     },
     attr(vnode, name) {

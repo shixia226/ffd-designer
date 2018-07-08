@@ -1,7 +1,4 @@
-import VTool from '../../common/v-tool';
-import Selector from './selector';
-
-export default function(vm, el) {
+export default function(designer, el) {
     new Vue({
         el: el,
         data() {
@@ -11,8 +8,7 @@ export default function(vm, el) {
         },
         watch: {
             preview() {
-                let content = VTool.save(vm).join('');
-                document.querySelector('.modal-body').innerHTML = content;
+                document.querySelector('.modal-body').innerHTML = designer.html();
                 new Vue({
                     el: '.modal-body',
                     replace: false
@@ -20,14 +16,11 @@ export default function(vm, el) {
             }
         },
         methods: {
-            remove() {
-                let vcmp = vm.pptCmp;
-                if (vcmp) {
-                    vcmp.$destroy();
-                    vcmp.$el.parentNode.removeChild(vcmp.$el);
-                    vm.pptCmp = null;
+            call(method) {
+                method = designer[method];
+                if (method) {
+                    method.apply(designer, [].slice.call(arguments, 1));
                 }
-                Selector.select();
             }
         }
     })

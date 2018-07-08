@@ -7,6 +7,7 @@ Vue.component('widget-image', {
             <option value="img-thumbnail">Thumbnail</option>
             <option value="img-fluid">Fluid</option>
             <option value="rounded">Rounded</option>
+            <option value="rounded-circle">Circle</option>
         </editor-select>
         <editor-text label="Width" name="vwidth" :value="width"></editor-text>
         <editor-text label="Height" name="vheight" :value="height"></editor-text>

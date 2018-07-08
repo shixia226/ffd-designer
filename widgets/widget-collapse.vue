@@ -5,7 +5,7 @@ Vue.component('widget-collapse', {
             <div :class="['card', cardClass||'']" v-for="(item, index) in vitems" :key="item.id" :data-item="index">
                 <div class="card-header">
                     <h5 class="mb-0">
-                        <button class="btn btn-link" data-toggle="collapse" :data-target="'#'+item.id" @click="active(index)">{{item.header}}</button>
+                        <button class="btn btn-link p-0" data-toggle="collapse" :data-target="'#'+item.id" @click="active(index)">{{item.header}}</button>
                     </h5>
                 </div>
 

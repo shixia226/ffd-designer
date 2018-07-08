@@ -25,4 +25,4 @@ import './editors/editor-button.vue';
 import './editors/editor-select.vue';
 
 Wiget();
-Designer();
+Designer.init('home');

@@ -2,14 +2,14 @@ import Selector from 'ffd-selector';
 import { Timeout } from 'ffd-util';
 
 export default {
-    init(dsVm, el) {
+    init(designer, el) {
         Selector.config({
             owner: el,
             onselect(evt, elems) {
                 if (elems) {
                     let pptCmp, vms = [];
                     for (let i = 0, len = elems.length; i < len; i++) {
-                        let vm = getVueCmp(dsVm, elems[i]);
+                        let vm = designer.getVm(elems[i]);
                         if (vm) {
                             if (!pptCmp) pptCmp = vm;
                             if (vms.indexOf(vm = vm.$el) === -1) {
@@ -17,34 +17,27 @@ export default {
                             }
                         }
                     }
-                    if (pptCmp) {
-                        Selector.select(vms, pptCmp.$options.resizable);
-                    }
-                    dsVm.pptCmp = pptCmp;
+                    designer.select(pptCmp, vms);
                 } else {
-                    let vm = getVueCmp(dsVm, evt.target);
-                    if (vm) {
-                        Selector.select([vm.$el], vm.$options.resizable);
-                    }
-                    dsVm.pptCmp = vm;
+                    designer.select(designer.getVm(evt.target));
                 }
             },
             ondragover(target, over) {
-                let vm = getVueCmp(dsVm, target),
+                let vm = designer.getVm(target),
                     dropelem;
                 while (vm && (!vm.droppable || !(dropelem = vm.droppable()))) {
-                    if (vm === dsVm) break;
-                    vm = getVueCmp(dsVm, vm.$el.parentNode);
+                    let pvm = designer.getVm(vm.$el.parentNode);
+                    if (vm === pvm) break;
+                    vm = pvm;
                 }
                 if (vm) {
-                    let helper = over && over.helper;
+                    let helper;
                     if (over && over.vm === vm) {
                         over.dropelem = dropelem;
+                        helper = over.helper;
                     } else {
-                        if (!helper) {
-                            helper = document.createElement('div');
-                            helper.className = 'drop-helper';
-                        }
+                        helper = document.createElement('div');
+                        helper.className = 'drop-helper';
                         over = { vm: vm, dropelem: dropelem, helper: helper };
                         $(vm.$el).addClass('droppable');
                     }
@@ -105,6 +98,10 @@ export default {
             ondragout(over) {
                 Timeout.remove(over.timer);
                 $(over.vm.$el).removeClass('droppable');
+                let helper = over.helper;
+                if (helper && helper.parentNode) {
+                    helper.parentNode.removeChild(helper);
+                }
             },
             ondrop(over, start) {
                 let elems = start.elems,
@@ -112,10 +109,13 @@ export default {
                     helper = over.helper,
                     pvm = over.vm;
                 if (elems) {
+                    let $children = pvm.$children;
                     for (let i = 0, len = elems.length; i < len; i++) {
-                        let vm = getVueCmp(dsVm, elems[i]);
+                        let vm = designer.getVm(elems[i]);
                         dropelem.insertBefore(vm.$el, helper);
-                        pvm.$children.push(vm);
+                        if ($children.indexOf(vm) === -1) {
+                            $children.push(vm);
+                        }
                         vm.$parent = pvm;
                     }
                     elems[0].scrollIntoView(true);
@@ -125,31 +125,29 @@ export default {
                     if (Widget) {
                         let vm = (new Widget()).$mount();
                         dropelem.insertBefore(vm.$el, helper);
+                        pvm.$children.push(vm);
                         vm.$parent = pvm;
                         vm.$root = pvm.$root;
-                        dsVm.pptCmp = vm;
-                        vm.$el.scrollIntoView(true);
-                        Selector.select([vm.$el], vm.$options.resizable);
+                        designer.select(vm);
                     }
                 }
-                helper.parentNode.removeChild(helper);
             },
             onresize(elems, rw, rh) {
                 for (let i = 0, len = elems.length; i < len; i++) {
                     let elem = elems[i],
-                        vm = getVueCmp(dsVm, elem);
+                        vm = designer.getVm(elem);
                     if (vm && vm.resize) {
                         vm.resize(parseInt(rw * elem.clientWidth), parseInt(rh * elem.clientHeight));
-                        dsVm.refreshPpt();
                     }
                 }
-                dsVm.$nextTick(function() {
-                    Selector.select(true);
-                })
+                designer.adjust();
                 return false;
             }
         });
 
+        $(el).on('mousedown', function(evt) {
+            Selector.mousedown(evt);
+        })
         $('body').on('mousemove', function(evt) {
             Selector.mousemove(evt);
         }).on('mouseup mouseleave', function(evt) {
@@ -166,30 +164,4 @@ export default {
     select(elems, resizable) {
         Selector.select(elems, resizable);
     }
-}
-
-function getVueCmpByPelem(vm, pelems) {
-    let $children = vm.$children;
-    if ($children) {
-        for (let i = 0, len = $children.length; i < len; i++) {
-            let vcmp = $children[i],
-                $el = vcmp.$el,
-                idx = pelems.indexOf($el);
-            if (idx !== -1) {
-                pelems.length = idx;
-                return getVueCmpByPelem(vcmp, pelems);
-            }
-        }
-    }
-    return vm;
-}
-
-function getVueCmp(vm, elem) {
-    let pelems = [],
-        $root = vm.$el;
-    while (elem && elem !== $root) {
-        pelems.push(elem);
-        elem = elem.parentNode;
-    }
-    return getVueCmpByPelem(vm, pelems);
 }
