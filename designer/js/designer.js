@@ -13,6 +13,7 @@ export default {
         this.render(page);
     },
     render(page) {
+        Selector.select();
         if (page) {
             $.ajax({
                 url: './pages/' + page + '.html',
@@ -80,13 +81,25 @@ function initPage(content) {
                 }
             }
         },
-        resize: function() {
+        updated: function() {
             this.$nextTick(function() {
                 Selector.select(true);
             })
         }
     });
+    browseVm(rootVm);
 }
+function browseVm(vm) {
+    let $children = vm.$children;
+    for (let i = 0, len = $children.length; i < len; i++) {
+        let vm = $children[i];
+        vm.$options.updated = LISTENER_UPDATED;
+        browseVm(vm);
+    }
+}
+const LISTENER_UPDATED = [function () {
+    this.$root.$emit('updated')
+}];
 
 function getVueCmpByPelem(vm, pelems) {
     let $children = vm.$children;

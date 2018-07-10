@@ -18,6 +18,7 @@ export default function(el, events) {
                     this.$on(name, events[name]);
                 }
             }
+
         }
     });
 }
