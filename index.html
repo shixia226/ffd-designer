@@ -35,20 +35,20 @@
             <div class="dropdown">
                 <a href="#" class="nav-link dropdown-toggle" data-toggle="dropdown">Page</a>
                 <div class="dropdown-menu">
-                    <a href="#" class="dropdown-item" @click="call('render', 'home')">Home</a>
-                    <a href="#" class="dropdown-item" @click="call('render', 'detail')">Detail</a>
+                    <a href="#" :class="['dropdown-item', page=='home'?'active':'']" @click="render('home')">Home</a>
+                    <a href="#" :class="['dropdown-item', page=='detail'?'active':'']" @click="render('detail')">Detail</a>
                     <div class="dropdown-divider"></div>
-                    <a href="#" class="dropdown-item" @click="call('render', 'widget')">Test</a>
+                    <a href="#" :class="['dropdown-item', page=='widget'?'active':'']" @click="render('widget')">Test</a>
                     <div class="dropdown-divider"></div>
-                    <a href="#" class="dropdown-item" @click="call('render', '')">New</a>
+                    <a href="#" :class="['dropdown-item', page==''?'active':'']" @click="render('')">New</a>
                 </div>
             </div>
-            <a href="#" class="nav-link disabled">Copy</a>
-            <a href="#" class="nav-link disabled">Paste</a>
-            <a href="#" class="nav-link disabled">Undo</a>
-            <a href="#" class="nav-link disabled">Redo</a>
+            <a href="#" class="nav-link" @click="call('copy')">Copy</a>
+            <a href="#" class="nav-link" @click="call('paste')">Paste</a>
+            <a href="#" class="nav-link" @click="call('undo')">Undo</a>
+            <a href="#" class="nav-link" @click="call('redo')">Redo</a>
             <a href="#" class="nav-link" @click="call('remove')">Remove</a>
-            <a href="#" class="nav-link disabled" @click="call('save')">Save</a>
+            <a href="#" class="nav-link" @click="call('save')">Save</a>
             <a href="#" class="nav-link" @click="preview=!preview" data-toggle="modal" data-target="#dialog-preview">Preview</a>
             <a href="#" class="nav-link">Help</a>
         </nav>

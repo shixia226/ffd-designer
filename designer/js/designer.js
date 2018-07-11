@@ -3,48 +3,104 @@ import Page from './page';
 import Nav from './nav';
 import Ppt from './ppt';
 import Selector from './selector';
+import Clipboard from './clipboard';
+import util from 'ffd-util';
 
-let rootVm, selectVm, pptVm;
+let rootVm, activeVm, selectedVm, pptVm;
 
 export default {
     init(page) {
-        Nav(this, '.designer > .nav');
         Selector.init(this, $('.designer > .editor')[0]);
-        this.render(page);
+        Nav(this, '.designer > .nav').render(page);
     },
     render(page) {
         Selector.select();
         if (page) {
             $.ajax({
                 url: './pages/' + page + '.html',
+                context: this,
                 success: initPage
             });
         } else {
-            initPage('');
+            initPage.call(this, '');
         }
+    },
+    copy() {
+        if (selectedVm) {
+            let html = [];
+            for (let i = 0, len = selectedVm.length; i < len; i++) {
+                html.push(this.html(selectedVm[i]));
+            }
+            Clipboard.copy(html.join(''));
+        }
+    },
+    paste() {
+        let pvm = activeVm,
+            dropelem;
+        while (pvm && (!pvm.droppable || !(dropelem = pvm.droppable()))) {
+            pvm = this.getVm(pvm.$el.parentNode);
+        }
+        if (pvm) {
+            let elem = document.createElement('div');
+            elem.innerHTML = Clipboard.paste();
+            let $children = new Vue({ el: elem }).$children;
+            if ($children) {
+                let $pchildren = pvm.$children,
+                    $root = pvm.$root,
+                    elems = [];
+                for (let i = 0, len = $children.length; i < len; i++) {
+                    let vm = $children[i],
+                        $el = vm.$el;
+                    dropelem.appendChild($el);
+                    $pchildren.push(vm);
+                    vm.$parent = pvm;
+                    vm.$root = $root;
+                    this.regist(vm);
+                    elems.push($el);
+                }
+                this.select($children[0], elems);
+            }
+        }
+    },
+    undo() {
+
+    },
+    redo() {
+
     },
     save() {
         let content = this.html();
         console.log(content);
     },
-    select(vm) {
-        vm = vm || rootVm;
-        if (vm) {
-            Selector.select(arguments[1] || [vm.$el], vm.$options.resizable);
-            pptVm = Ppt(selectVm = vm, '.ppt');
+    regist(vm) {
+        vm.$options.updated = LISTENER_UPDATED;
+        let $children = vm.$children;
+        for (let i = 0, len = $children.length; i < len; i++) {
+            this.regist($children[i]);
         }
     },
+    select(vm) {
+        if (util.isArray(vm)) {
+            selectedVm = vm;
+            vm = vm[0];
+        } else {
+            vm = vm || rootVm;
+            selectedVm = [vm];
+        }
+        Selector.select(arguments[1] || [vm.$el], vm.$options.resizable);
+        pptVm = Ppt(activeVm = vm, '.ppt');
+    },
     adjust() {
-        if (selectVm) {
-            pptVm = Ppt(selectVm, '.ppt');
+        if (activeVm) {
+            pptVm = Ppt(activeVm, '.ppt');
             rootVm.$nextTick(function() {
                 Selector.select(true);
             })
         }
     },
     remove(vm) {
-        vm = vm || selectVm;
-        if (vm && selectVm !== rootVm) {
+        vm = vm || activeVm;
+        if (vm && activeVm !== rootVm) {
             vm.$destroy();
             vm.$el.parentNode.removeChild(vm.$el);
             this.select();
@@ -87,17 +143,9 @@ function initPage(content) {
             })
         }
     });
-    browseVm(rootVm);
+    this.regist(rootVm);
 }
-function browseVm(vm) {
-    let $children = vm.$children;
-    for (let i = 0, len = $children.length; i < len; i++) {
-        let vm = $children[i];
-        vm.$options.updated = LISTENER_UPDATED;
-        browseVm(vm);
-    }
-}
-const LISTENER_UPDATED = [function () {
+const LISTENER_UPDATED = [function() {
     this.$root.$emit('updated')
 }];
 

@@ -7,17 +7,14 @@ export default {
             owner: el,
             onselect(evt, elems) {
                 if (elems) {
-                    let pptCmp, vms = [];
+                    let vms = [];
                     for (let i = 0, len = elems.length; i < len; i++) {
                         let vm = designer.getVm(elems[i]);
                         if (vm) {
-                            if (!pptCmp) pptCmp = vm;
-                            if (vms.indexOf(vm = vm.$el) === -1) {
-                                vms.push(vm);
-                            }
+                            vms.push(vm);
                         }
                     }
-                    designer.select(pptCmp, vms);
+                    designer.select(vms);
                 } else {
                     designer.select(designer.getVm(evt.target));
                 }
@@ -128,6 +125,7 @@ export default {
                         pvm.$children.push(vm);
                         vm.$parent = pvm;
                         vm.$root = pvm.$root;
+                        designer.regist(vm);
                         designer.select(vm);
                     }
                 }

@@ -1,8 +1,9 @@
 export default function(designer, el) {
-    new Vue({
+    return new Vue({
         el: el,
         data() {
             return {
+                page: null,
                 preview: false
             }
         },
@@ -21,6 +22,9 @@ export default function(designer, el) {
                 if (method) {
                     method.apply(designer, [].slice.call(arguments, 1));
                 }
+            },
+            render(page) {
+                this.call('render', this.page = page);
             }
         }
     })
