@@ -270,7 +270,7 @@ function undoVmInsert(pidx, nidx) {
     let pvm = getVmByIndex(pidx),
         $children = VTool.children(pvm);
     nidx = nidx < 0 ? $children.length - 1 : nidx;
-    removeVm($children[nidx]);
+    removeVm.call(this, $children[nidx]);
 }
 
 function redoVmInsert(pidx, nidx, widget) {
