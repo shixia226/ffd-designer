@@ -23,8 +23,19 @@ Vue.component('widget-image', {
     },
     methods: {
         resize(width, height) {
+            let ov = {
+                vwidth: this.vwidth,
+                vheight: this.vheight
+            }
             this.vwidth = width + 'px';
             this.vheight = height + 'px';
+            return {
+                ov,
+                nv: {
+                    vwidth: this.vwidth,
+                    vheight: this.vheight
+                }
+            }
         }
     },
     computed:{

@@ -1,6 +1,7 @@
 import VTool from '../../common/v-tool';
+import util from 'ffd-util';
 
-export default function(vcmp, el) {
+export default function(vcmp, el, onchange) {
     return new Vue({
         el: el,
         template: '<div class="ppt">' + (vcmp ? vcmp.$options.editor || '' : '') + '</div>',
@@ -16,11 +17,18 @@ export default function(vcmp, el) {
                     for (let i = 0; i < len; i++) {
                         data = data[names[i]];
                     }
-                    data[names[len]] = value;
+                    let dataName = names[len];
+                    util.call(onchange, null, vcmp, {
+                        [dataName]: value
+                    }, {
+                        [dataName]: data[dataName]
+                    });
+                    data[dataName] = value;
                 }
             })
             this.$on('click', function(handler) {
                 try {
+                    util.call(onchange, null, vcmp);
                     (new Function(handler)).call(vcmp);
                 } catch (e) {
                     console.error('Ppt Handler Register Invalid.');

@@ -1,8 +1,9 @@
 import Selector from 'ffd-selector';
+import util from 'ffd-util';
 import { Timeout } from 'ffd-util';
 
 export default {
-    init(designer, el) {
+    init(designer, el, events) {
         Selector.config({
             owner: el,
             onselect(evt, elems) {
@@ -106,6 +107,7 @@ export default {
                     helper = over.helper,
                     pvm = over.vm;
                 if (elems) {
+                    util.call(events.onmove, designer, elems, helper);
                     let $children = pvm.$children;
                     for (let i = 0, len = elems.length; i < len; i++) {
                         let vm = designer.getVm(elems[i]);
@@ -113,6 +115,8 @@ export default {
                         if ($children.indexOf(vm) === -1) {
                             $children.push(vm);
                         }
+                        let $pchildren = vm.$parent.$children;
+                        $pchildren.splice($pchildren.indexOf(vm), 1);
                         vm.$parent = pvm;
                     }
                     elems[0].scrollIntoView(true);
@@ -120,6 +124,7 @@ export default {
                 } else {
                     let Widget = Vue.component(start.widget);
                     if (Widget) {
+                        util.call(events.oninsert, designer, start.widget, helper);
                         let vm = (new Widget()).$mount();
                         dropelem.insertBefore(vm.$el, helper);
                         pvm.$children.push(vm);
@@ -135,7 +140,8 @@ export default {
                     let elem = elems[i],
                         vm = designer.getVm(elem);
                     if (vm && vm.resize) {
-                        vm.resize(parseInt(rw * elem.clientWidth), parseInt(rh * elem.clientHeight));
+                        let rt = vm.resize(parseInt(rw * elem.clientWidth), parseInt(rh * elem.clientHeight));
+                        util.call(events.onchange, designer, vm, rt.nv, rt.ov);
                     }
                 }
                 designer.adjust();

@@ -50,7 +50,7 @@
             <a href="#" class="nav-link" @click="call('remove')">Remove</a>
             <a href="#" class="nav-link" @click="call('save')">Save</a>
             <a href="#" class="nav-link" @click="preview=!preview" data-toggle="modal" data-target="#dialog-preview">Preview</a>
-            <a href="#" class="nav-link">Help</a>
+            <a href="#" class="nav-link" data-toggle="modal" data-target="#dialog-help">Help</a>
         </nav>
         <div class="editor">
             <div class="content"></div>
@@ -63,13 +63,29 @@
                 <div class="modal-header">
                     <h5 class="modal-title">Preview</h5>
                     <button type="button" class="close" data-dismiss="modal">
-                                <span>&times;</span>
-                            </button>
+                        <span>&times;</span>
+                    </button>
                 </div>
                 <div class="modal-body">
                 </div>
                 <div class="modal-footer">
                     <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="modal fade" role="dialog" id="dialog-help">
+        <div class="modal-dialog modal-dialog-centered" role="document">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title">Help</h5>
+                    <button type="button" class="close" data-dismiss="modal">
+                        <span>&times;</span>
+                    </button>
+                </div>
+                <div class="modal-body">
+                    <p>More functions or suggestions please contact with me.</p>
+                    <p>Email: shixia226@163.com</p>
                 </div>
             </div>
         </div>

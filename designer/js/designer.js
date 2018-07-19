@@ -3,14 +3,19 @@ import Page from './page';
 import Nav from './nav';
 import Ppt from './ppt';
 import Selector from './selector';
-import Clipboard from './clipboard';
+import Clipboard from '../../common/clipboard';
+import UndoRedo from '../../common/undo-redo';
 import util from 'ffd-util';
 
-let rootVm, activeVm, selectedVm, pptVm;
+let rootVm, activeVm, selectedVm, pptVm, undoRedo;
 
 export default {
     init(page) {
-        Selector.init(this, $('.designer > .editor')[0]);
+        Selector.init(this, $('.designer > .editor')[0], {
+            onchange: onVmDataChange,
+            onmove: onVmMove,
+            oninsert: onVmInsert
+        });
         Nav(this, '.designer > .nav').render(page);
     },
     render(page) {
@@ -45,7 +50,7 @@ export default {
             elem.innerHTML = Clipboard.paste();
             let $children = new Vue({ el: elem }).$children;
             if ($children) {
-                let $pchildren = pvm.$children,
+                let $pchildren = VTool.children(pvm),
                     $root = pvm.$root,
                     elems = [];
                 for (let i = 0, len = $children.length; i < len; i++) {
@@ -63,10 +68,10 @@ export default {
         }
     },
     undo() {
-
+        undoRedo.undo();
     },
     redo() {
-
+        undoRedo.redo();
     },
     save() {
         let content = this.html();
@@ -88,7 +93,7 @@ export default {
             selectedVm = [vm];
         }
         Selector.select(arguments[1] || [vm.$el], vm.$options.resizable);
-        pptVm = Ppt(activeVm = vm, '.ppt');
+        pptVm = Ppt(activeVm = vm, '.ppt', onVmDataChange);
     },
     adjust() {
         if (activeVm) {
@@ -101,9 +106,22 @@ export default {
     remove(vm) {
         vm = vm || activeVm;
         if (vm && activeVm !== rootVm) {
-            vm.$destroy();
-            vm.$el.parentNode.removeChild(vm.$el);
-            this.select();
+            let pvm = vm.$parent,
+                pidx = getVmIndex(pvm),
+                idx = VTool.children(pvm).indexOf(vm);
+            undoRedo.action({
+                undo: {
+                    handler: undoRemove,
+                    context: this,
+                    args: [pidx, idx, this.html(vm)]
+                },
+                redo: {
+                    handler: redoRemove,
+                    context: this,
+                    args: [pidx, idx]
+                }
+            })
+            removeVm.call(this, vm);
         }
     },
     html(vm) {
@@ -144,22 +162,201 @@ function initPage(content) {
         }
     });
     this.regist(rootVm);
+    undoRedo = new UndoRedo();
 }
 const LISTENER_UPDATED = [function() {
-    this.$root.$emit('updated')
+    this.$root.$emit('updated');
 }];
 
+function onVmDataChange(vm, nv, ov) {
+    let idx = getVmIndex(vm);
+    undoRedo.action({
+        undo: {
+            handler: setVmData,
+            args: [idx, ov]
+        },
+        redo: {
+            handler: setVmData,
+            args: [idx, nv]
+        }
+    })
+}
+
+function getNextVmIndex(pvm, elem) {
+    while (true) {
+        elem = elem.nextSibling;
+        if (!elem || elem.nodeType === 1) break;
+    }
+    return elem ? VTool.children(pvm).indexOf(this.getVm(elem)) : -1;
+}
+
+function onVmMove(elems, helper) {
+    let len = elems.length,
+        npvm = this.getVm(helper.parentNode),
+        lastElem;
+    for (let i = 0; i < len; i++) {
+        let elem = elems[i];
+        if (!lastElem) {
+            lastElem = elem;
+        } else if (lastElem.compareDocumentPosition(elem) !== 2) {
+            lastElem = elem;
+        }
+    }
+    let opvm = this.getVm(lastElem.parentNode),
+        opidx = getVmIndex(opvm),
+        onidx = getNextVmIndex.call(this, opvm, lastElem) - len,
+        npidx = getVmIndex(npvm),
+        nnidx = getNextVmIndex.call(this, npvm, helper);
+    undoRedo.action({
+        undo: {
+            handler: moveVm,
+            context: this,
+            args: [opidx, onidx, npidx, nnidx, len]
+        },
+        redo: {
+            handler: moveVm,
+            context: this,
+            args: [npidx, nnidx, opidx, onidx, len]
+        }
+    })
+}
+
+function moveVm(npidx, nnidx, opidx, onidx, len) {
+    let npvm = getVmByIndex(npidx),
+        $nchildren = VTool.children(npvm),
+        opvm = getVmByIndex(opidx),
+        $ochildren = VTool.children(opvm),
+        pelem, func, next;
+    if (nnidx < 0) {
+        nnidx = $nchildren.length - 1;
+        func = 'appendChild';
+        pelem = npvm.droppable();
+    } else {
+        func = 'insertBefore';
+        next = $nchildren[nnidx].$el;
+        pelem = next.parentNode;
+    }
+    if (onidx < 0) {
+        onidx = $ochildren.length - len;
+    }
+    for (let i = onidx + len - 1; i >= onidx; i--) {
+        let vm = $ochildren[i];
+        pelem[func](vm.$el, next);
+        $nchildren.splice(nnidx, 0, vm);
+        vm.$parent = npvm;
+    }
+    this.select();
+}
+
+function onVmInsert(widget, helper) {
+    let pvm = this.getVm(helper.parentNode),
+        pidx = getVmIndex(pvm),
+        nidx = getNextVmIndex.call(this, pvm, helper);
+    undoRedo.action({
+        undo: {
+            handler: undoVmInsert,
+            context: this,
+            args: [pidx, nidx]
+        },
+        redo: {
+            handler: redoVmInsert,
+            context: this,
+            args: [pidx, nidx, widget]
+        }
+    })
+}
+
+function undoVmInsert(pidx, nidx) {
+    let pvm = getVmByIndex(pidx),
+        $children = VTool.children(pvm);
+    nidx = nidx < 0 ? $children.length - 1 : nidx;
+    removeVm($children[nidx]);
+}
+
+function redoVmInsert(pidx, nidx, widget) {
+    let vm = (new(Vue.component(widget))()).$mount(),
+        pvm = getVmByIndex(pidx),
+        $children = VTool.children(pvm);
+    if (nidx < 0) {
+        pvm.droppable().appendChild(vm.$el);
+        $children.push(vm);
+    } else {
+        let el = $children[nidx].$el;
+        el.parentNode.insertBefore(vm.$el, el);
+        $children.splice(nidx, 0, vm);
+    }
+    vm.$parent = pvm;
+    vm.$root = pvm.$root;
+    this.regist(vm);
+    this.select(vm);
+}
+
+function undoRemove(pidx, idx, content) {
+    let elem = document.createElement('div');
+    elem.innerHTML = content;
+    let nvm = (new Vue({ el: elem })).$children[0];
+    let pvm = getVmByIndex(pidx),
+        $children = VTool.children(pvm),
+        vm = $children[idx];
+    if (vm) {
+        vm.$el.parentNode.insertBefore(nvm.$el, vm.$el);
+        $children.splice(idx, 0, nvm);
+    } else {
+        pvm.droppable().appendChild(nvm.$el);
+        $children.push(nvm);
+    }
+    nvm.$parent = pvm;
+    nvm.$root = pvm.$root;
+    this.regist(nvm);
+    this.select(nvm);
+}
+
+function redoRemove(pidx, idx) {
+    removeVm.call(this, VTool.children(getVmByIndex(pidx))[idx]);
+}
+
+function removeVm(vm) {
+    let $children = vm.$parent.$children;
+    $children.splice($children.indexOf(vm), 1);
+    vm.$destroy();
+    vm.$el.parentNode.removeChild(vm.$el);
+    this.select(false);
+}
+
+function getVmIndex(vm) {
+    let idx = [];
+    while (vm !== rootVm) {
+        let pvm = vm.$parent;
+        idx.unshift(VTool.children(pvm).indexOf(vm));
+        vm = pvm;
+    }
+    return idx;
+}
+
+function getVmByIndex(idx) {
+    let vm = rootVm;
+    for (let i = 0, len = idx.length; i < len; i++) {
+        vm = VTool.children(vm)[idx[i]];
+    }
+    return vm;
+}
+
+function setVmData(idx, data) {
+    let vm = getVmByIndex(idx);
+    for (let name in data) {
+        vm[name] = data[name];
+    }
+}
+
 function getVueCmpByPelem(vm, pelems) {
-    let $children = vm.$children;
-    if ($children) {
-        for (let i = 0, len = $children.length; i < len; i++) {
-            let vcmp = $children[i],
-                $el = vcmp.$el,
-                idx = pelems.indexOf($el);
-            if (idx !== -1) {
-                pelems.length = idx;
-                return getVueCmpByPelem(vcmp, pelems);
-            }
+    let $children = VTool.children(vm);
+    for (let i = 0, len = $children.length; i < len; i++) {
+        let vcmp = $children[i],
+            $el = vcmp.$el,
+            idx = pelems.indexOf($el);
+        if (idx !== -1) {
+            pelems.length = idx;
+            return getVueCmpByPelem(vcmp, pelems);
         }
     }
     return vm;
