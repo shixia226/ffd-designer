@@ -8,23 +8,28 @@ export default {
             owner: el,
             onselect(evt, elems) {
                 if (elems) {
-                    let vms = [];
+                    let vms = [],
+                        vmelems = [];
                     for (let i = 0, len = elems.length; i < len; i++) {
-                        let vm = designer.getVm(elems[i]);
-                        if (vm) {
+                        let elem = elems[i],
+                            vm = designer.getVm(elem);
+                        if (vm && vms.indexOf(vm) === -1) {
                             vms.push(vm);
+                            vmelems.push(vm.$el);
                         }
                     }
-                    designer.select(vms);
+                    if (vms.length) {
+                        designer.select(vms, vmelems);
+                    }
                 } else {
                     designer.select(designer.getVm(evt.target));
                 }
             },
             ondragover(target, over) {
-                let vm = designer.getVm(target),
+                let vm = designer.getVm(target, 'drop'),
                     dropelem;
                 while (vm && (!vm.droppable || !(dropelem = vm.droppable()))) {
-                    let pvm = designer.getVm(vm.$el.parentNode);
+                    let pvm = designer.getVm(vm.$el.parentNode, 'drop');
                     if (vm === pvm) break;
                     vm = pvm;
                 }
@@ -112,11 +117,11 @@ export default {
                     for (let i = 0, len = elems.length; i < len; i++) {
                         let vm = designer.getVm(elems[i]);
                         dropelem.insertBefore(vm.$el, helper);
+                        let $pchildren = vm.$parent.$children;
+                        $pchildren.splice($pchildren.indexOf(vm), 1);
                         if ($children.indexOf(vm) === -1) {
                             $children.push(vm);
                         }
-                        let $pchildren = vm.$parent.$children;
-                        $pchildren.splice($pchildren.indexOf(vm), 1);
                         vm.$parent = pvm;
                     }
                     elems[0].scrollIntoView(true);

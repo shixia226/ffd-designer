@@ -1,10 +1,11 @@
 Vue.component('widget-container', {
-    template: `<div data-widget="container" :class="vclazz"><slot></slot></div>`,
+    template: `<div :designer="designer" :class="vclazz"><slot></slot></div>`,
     editor: `<editor-text name="vclazz" :value="clazz" label="Class"></editor-text>`,
-    props: ['clazz'],
+    props: ['clazz', 'designer'],
     data() {
         return {
-            vclazz: this.clazz || 'p-3'
+            vclazz: this.clazz || 'p-3',
+            vdesigner: this.designer
         }
     },
     methods: {

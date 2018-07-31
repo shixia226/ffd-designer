@@ -1,3 +1,5 @@
+import util from 'ffd-util';
+
 export default {
     text(vnode) {
         let children = vnode.children || vnode.default;
@@ -16,16 +18,17 @@ export default {
     random() {
         return ('' + Math.random()).replace('.', '');
     },
-    data(vm) {
+    data(vm, prefix, data) {
         if (!vm) return {};
-        let $data = vm.$data,
-            data = {};
-        if (arguments[1]) {
+        data = data || {};
+        let $data = vm.$data;
+        if (prefix) {
             let names = Object.getOwnPropertyNames($data);
+            prefix = util.isString(prefix) ? prefix : '';
             for (let i = 0, len = names.length; i < len; i++) {
                 let name = names[i];
                 if (name.charAt(0) === 'v') {
-                    data[name.substr(1)] = $data[name];
+                    data[prefix + name.substr(1)] = $data[name];
                 }
             }
         } else {

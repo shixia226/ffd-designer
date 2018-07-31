@@ -93,7 +93,7 @@ export default {
             selectedVm = [vm];
         }
         Selector.select(arguments[1] || [vm.$el], vm.$options.resizable);
-        pptVm = Ppt(activeVm = vm, '.ppt', onVmDataChange);
+        pptVm = Ppt(activeVm = vm, vm.$el.getAttribute('designer') === 'group', '.ppt', onVmDataChange);
     },
     adjust() {
         if (activeVm) {
@@ -128,13 +128,27 @@ export default {
         vm = vm || rootVm
         return vm ? VTool.save(vm).join('') : '';
     },
-    getVm(elem) {
+    getVm(elem, type) {
         if (rootVm) {
             let pelems = [],
                 $root = rootVm.$el;
             while (elem && elem !== $root) {
                 pelems.push(elem);
                 elem = elem.parentNode;
+                if (elem.nodeType === 9) {
+                    pelems.length = 0;
+                    break;
+                }
+            }
+            if (type !== true) {
+                for (let i = pelems.length - 1; i >= 0; i--) {
+                    let elem = pelems[i],
+                        designer = elem.getAttribute('designer');
+                    if (designer === 'group') {
+                        pelems = pelems.slice(type === 'drop' ? i + 1 : i);
+                        break;
+                    }
+                }
             }
             return getVueCmpByPelem(rootVm, pelems);
         }
