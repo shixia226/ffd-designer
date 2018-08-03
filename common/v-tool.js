@@ -8,7 +8,12 @@ export default {
             for (let i = 0, len = children.length; i < len; i++) {
                 text.push(children[i].text);
             }
-            return text.join('').trim();
+            text = text.join('');
+            let space = text.match(/^ +/m);
+            if (space) {
+                text = text.replace(new RegExp('\n' + space[0], 'g'), '\n');
+            }
+            return text.trim();
         }
     },
     attr(vnode, name) {

@@ -16,6 +16,7 @@ import './widgets/widget-container.vue';
 import './widgets/widget-text.vue';
 import './widgets/widget-pagination.vue';
 import './widgets/widget-image.vue';
+import './widgets/widget-code.vue';
 
 import './editors/editor-theme.vue';
 import './editors/editor-switch.vue';

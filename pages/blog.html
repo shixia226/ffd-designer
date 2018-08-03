@@ -1,0 +1,28 @@
+<widget-text block="d-block" display="display-3">
+    Web Worker 使用教程
+</widget-text>
+<widget-text block="d-block" display="display-4">
+    一、概述
+</widget-text>
+<widget-text block="d-block">
+    JavaScript 语言采用的是单线程模型，也就是说，所有任务只能在一个线程上完成，一次只能做一件事。前面的任务没做完，后面的任务只能等着。随着电脑计算能力的增强，尤其是多核 CPU 的出现，单线程带来很大的不便，无法充分发挥计算机的计算能力。
+</widget-text>
+<widget-text block="d-block" display="display-4">
+    二、基本用法
+</widget-text>
+<widget-text block="d-block">
+    2.1 主线程
+    主线程采用new命令，调用Worker()构造函数，新建一个 Worker 线程。
+</widget-text>
+<widget-code>
+    var worker = new Worker('work.js');
+</widget-code>
+<widget-text block="d-block">
+    Worker()构造函数的参数是一个脚本文件，该文件就是 Worker 线程所要执行的任务。由于 Worker 不能读取本地文件，所以这个脚本必须来自网络。如果下载没有成功（比如404错误），Worker 就会默默地失败。
+
+    然后，主线程调用worker.postMessage()方法，向 Worker 发消息。
+</widget-text>
+<widget-code>
+    worker.postMessage('Hello World');
+worker.postMessage({method: 'echo', args: ['Work']});
+</widget-code>
