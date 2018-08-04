@@ -12,7 +12,7 @@ Vue.component('widget-code', {
         </editor-select>`,
     save(vm, html, space = '') {
         html = html || [];
-        html.push(vcode);
+        html.push(vm.vcode);
         return html;
     },
     props: ['language'],
@@ -27,7 +27,7 @@ Vue.component('widget-code', {
     data() {
         return {
             vlanguage: this.language || 'javascript',
-            vcode: VTool.text(this.$slots)
+            vcode: VTool.text(this.$slots) || ''
         }
     }
 })
