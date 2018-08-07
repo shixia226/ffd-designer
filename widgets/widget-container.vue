@@ -4,7 +4,7 @@ Vue.component('widget-container', {
     props: ['clazz', 'designer'],
     data() {
         return {
-            vclazz: this.clazz || 'p-3',
+            vclazz: this.clazz || '',
             vdesigner: this.designer
         }
     },

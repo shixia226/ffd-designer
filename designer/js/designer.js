@@ -78,6 +78,7 @@ export default {
         console.log(content);
     },
     regist(vm) {
+        vm.$el.setAttribute('widget-container', true);
         vm.$options.updated = LISTENER_UPDATED;
         let $children = vm.$children;
         for (let i = 0, len = $children.length; i < len; i++) {
@@ -94,6 +95,11 @@ export default {
         }
         Selector.select(arguments[1] || [vm.$el], vm.$options.resizable);
         pptVm = Ppt(activeVm = vm, vm.$el.getAttribute('designer') === 'group', '.ppt', onVmDataChange);
+    },
+    upselect() {
+        if (activeVm && activeVm !== rootVm) {
+            this.select(activeVm.$parent);
+        }
     },
     adjust() {
         if (activeVm) {

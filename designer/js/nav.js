@@ -9,11 +9,16 @@ export default function(designer, el) {
         },
         watch: {
             preview() {
-                document.querySelector('.modal-body').innerHTML = designer.html();
+                let script = $('.preview .modal-body').html(designer.html()).children('textarea').remove().val();
                 new Vue({
-                    el: '.modal-body',
+                    el: '.preview .modal-body',
                     replace: false
-                })
+                });
+                script = script ? JSON.parse(script) : {};
+                $('.preview .modal-header .modal-title').html('Preview ~ ' + (script.title || 'UNSET'));
+                if ((script = script.script)) {
+                    (new Function(script))();
+                }
             }
         },
         methods: {

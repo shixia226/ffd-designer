@@ -38,7 +38,8 @@
                 <div class="dropdown-menu">
                     <a href="#" :class="['dropdown-item', page=='home'?'active':'']" @click="render('home')">Home</a>
                     <a href="#" :class="['dropdown-item', page=='detail'?'active':'']" @click="render('detail')">Detail</a>
-                    <a href="#" :class="['dropdown-item', page=='detail'?'active':'']" @click="render('blog')">Blog</a>
+                    <a href="#" :class="['dropdown-item', page=='blog'?'active':'']" @click="render('blog')">Blog</a>
+                    <a href="#" :class="['dropdown-item', page=='login'?'active':'']" @click="render('login')">Login</a>
                     <div class="dropdown-divider"></div>
                     <a href="#" :class="['dropdown-item', page=='widget'?'active':'']" @click="render('widget')">Test</a>
                     <div class="dropdown-divider"></div>
@@ -50,6 +51,7 @@
             <a href="#" class="nav-link" @click="call('undo')">Undo</a>
             <a href="#" class="nav-link" @click="call('redo')">Redo</a>
             <a href="#" class="nav-link" @click="call('remove')">Remove</a>
+            <a href="#" class="nav-link" @click="call('upselect')">Upselect</a>
             <a href="#" class="nav-link" @click="call('save')">Save</a>
             <a href="#" class="nav-link" @click="preview=!preview" data-toggle="modal" data-target="#dialog-preview">Preview</a>
             <a href="#" class="nav-link" data-toggle="modal" data-target="#dialog-help">Help</a>

@@ -81,6 +81,7 @@ export default {
                 }
             },
             ondragstart(target) {
+                $(el).addClass('drag-status');
                 let $elem = $(target);
                 if (!$elem.attr('widget')) {
                     $elem = $elem.closest('[widget]');
@@ -97,6 +98,10 @@ export default {
                         widget: $elem.attr('widget')
                     }
                 }
+            },
+            ondragend() {
+                $(el).removeClass('drag-status');
+                Selector.select(true);
             },
             ondragout(over) {
                 Timeout.remove(over.timer);

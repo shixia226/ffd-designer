@@ -59,9 +59,6 @@ body {
             padding: 10px;
             position: relative;
             overflow: auto;
-            [data-widget="container"] {
-                border: 1px dotted #CCC;
-            }
             .content {
                 overflow: hidden;
             }
@@ -75,6 +72,13 @@ body {
     padding: 3px 5px;
     border-radius: 3px;
     z-index: 1000;
+}
+
+.drag-status {
+    [widget-container] {
+        border: 1px dashed #CCC;
+        padding: 10px;
+    }
 }
 
 .droppable {

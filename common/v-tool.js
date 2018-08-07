@@ -60,20 +60,24 @@ export default {
     save(vm, html, space) {
         html = html || [];
         space = space || '';
-        let tag = vm.$options.name || 'div',
-            $data = this.data(vm),
-            cspace = (space || '\n') + '    ';
-        html.push(space, '<', tag);
-        for (let name in $data) {
-            if ($data[name]) {
-                html.push(' ', name, '="', $data[name], '"');
+        let tag = vm.$options.name,
+            cspace = space ? (space + '    ') : '\n';
+        if (tag) {
+            let $data = this.data(vm);
+            html.push(space, '<', tag);
+            for (let name in $data) {
+                if ($data[name]) {
+                    html.push(' ', name, '="', $data[name], '"');
+                }
             }
+            html.push('>');
         }
-        html.push('>');
-        let htmlLen = html.length;
+        let htmlLen = html.length,
+            save = true;
         if (vm.$options.save) {
-            vm.$options.save(vm, html, cspace);
-        } else {
+            save = vm.$options.save(vm, html, cspace) === false;
+        }
+        if (save) {
             let $children = this.children(vm);
             for (let i = 0, len = $children.length; i < len; i++) {
                 this.save($children[i], html, cspace);
@@ -82,7 +86,9 @@ export default {
         if (htmlLen < html.length) {
             html.push(space || '\n');
         }
-        html.push('</', tag, '>');
+        if (tag) {
+            html.push('</', tag, '>');
+        }
         return html;
     }
 }
