@@ -141,7 +141,7 @@ export default {
             while (elem && elem !== $root) {
                 pelems.push(elem);
                 elem = elem.parentNode;
-                if (elem.nodeType === 9) {
+                if (!elem || elem.nodeType === 9) {
                     pelems.length = 0;
                     break;
                 }
