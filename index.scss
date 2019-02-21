@@ -87,9 +87,20 @@ body {
 }
 
 .drop-helper {
-    display: inline-block;
+    display: block;
     width: 100%;
-    height: 60px;
-    background: #ACACAC url(data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAjoAAAA8BAMAAACdoA3HAAAAMFBMVEWsrKwZGfMoKOtDQ98AAP83N+WBgcFubspaWtSbm7ROTtmKir1kZM+SkrikpLB3d8UI+/B7AAAE3ElEQVR42u3aSYwMURzH8W91pau3aVM11rFWj30ZCm0Nh+kZ0yJEjz2CNIaTSM3gwKkNQsKhmkgEB2tERNKI/TLWgyUxtgiXGYmbA0LiqF532w49JLg89UnqV+mqutQ//er9+3Xh8Xg8Ho/H8++9esR/aVPMGAXRo90pLTrWMFoBrcGw+MFhJHfsIdENw7qMHbiH0prOEhgG0YWbQ/P57kl/5Ha+FVcwlqET2nDgMdxxoINvsnXvkFpkJEJZLEcn/O8ADbUVOOdGUbwWufnSCOMifeiEQt4iYKth2BRodbIPrA0IqsnNX1fHnwN11BhVp8Av+8CiGqEFlAyl5YcUE4HxTXZEp6BxFpLTcQVMCOuUFuoBqLa7LVxOxKRggYnkTFxtadDq6URTBjYANxaBmv762EkjORPXCCA6i05EY4uvj45caagEtlDgl3zGWh0zEqchbOKqoDOa2yxXnDqXAdWioFHuGat5cY5bNzO02bgMOjcPGAfaKIoWtCKxx5n8bFRNFb9RnfIkaEm0hY++HkggsUA1wg4rkPyd6vhMsWkL098O1COx5h/vGyI1EE5R0sa7E9j+YKkDnCwcsJBXuUnR9lZcWoI3bTbRhhSRgRP4WeRelXH/8zVjIp+WdFne002ItSOv1w5FBkK4tqzXBNi6Xqehn8KPtHFVO6/25PiOmYQt5ca2lJsEZiOtNYYxioLgTAQlGa7sj9oHHSOX5Qeru24GVQdfJTfas0ez7W7ik7dR9g91Fl3rRZ5SifC00nfcZmwuYgbraSbvZcwYxppFuLIZ2G5pM5k6YpJINsrbKI8AnWA1wgkLIZ5qi/E5SfiIkmE+wv5ROa4NnoIw1oFu6Q5T61ehu9mfgcjKfwR0WJUDQoYDiFuPb7k8yEJ5dIxQT1yRXrgWmri0GRBOELfPX0iecTMXkLdRbgZ00ExArUUIz9CS0flGO82hHsXf64oN+O1xiF09ZJPlibKRjfYzN1HkbZQXA9XALqCxHqGtn98iOBuWqRZKCtc2XAr+DNBoQlxXEtOYj8jyFqSlA9OAvcCgFIidfRMUE03POmxPU6wfPqK6ON2KVpfZnqJsKG5yqgfS0oFVgAJqjUN+fLkDits2/sx4Qt2/XYWS3wdqwFeD8YhsSmR0icSNcj9AtfIV2ji7OHGJz1XwPlSJWo+gk79sXwo65sLG2uAsmOCI9O+VuFGejGugExhJeZ2FK1jLynYxVXUZ4Lf4aCEMQRg7AohbMGiOoqP1xE127kFebiUgGOvqcC6BED/CMCjTUa2VTpcK8u7wlZqAYF2q0cZn4Wa5lUJeqklBeTcL1+MBBCrBb9HMfDF75/lshOJXp6POPgpNDm5ejEr9ykGVQ97tmbiCvcFngpLW+mtziNvkaUkK9vcF4jWMIFKFyOHrkJnaC2FNIg0c7OpA4xFQOJ/z6YFait4fQTggzoe69aIP52ch8lINUvvQ/T6Rlgobnrf0doAGUZ23o9mUOpGhKNQw0eFQiygO/ukwPNi9t8g+Psn/jeBFzKhY5sC5ijMIK4DwMKhsGsI30RbDqNqNsBZo6vqmXWS7T+aHcieCGTwlZfGUtgxPSWXyLof+BR3yLof+BZPxlKRKvC7x58bjKemx1+yUtq8aTwnRO0PxlBCrOIvH4/F4PB7Pv/QFg7UAniC9BVgAAAAASUVORK5CYII=) no-repeat center center;
+    height: 0px;
+    background: #ACACAC;
     background-size: auto 100%;
+    position: relative;
+    pointer-events: none;
+    &::before {
+        content: '';
+        display: block;
+        width: 100%;
+        height: 20px;
+        background: #ACACAC;
+        margin-top: -10px;
+        position: absolute;
+    }
 }

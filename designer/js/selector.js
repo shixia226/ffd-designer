@@ -25,8 +25,9 @@ export default {
                     designer.select(designer.getVm(evt.target));
                 }
             },
-            ondragover(target, over) {
-                let vm = designer.getVm(target, 'drop'),
+            ondragover(evt, over) {
+                let target = evt.target,
+                    vm = designer.getVm(target, 'drop'),
                     dropelem;
                 while (vm && (!vm.droppable || !(dropelem = vm.droppable()))) {
                     let pvm = designer.getVm(vm.$el.parentNode, 'drop');
